@@ -6,7 +6,7 @@ docker run --rm \
   -w /go/src/GP \
   golang:alpine go build
 
-IMAGE="go_gp/go_gp:latest"
+IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
 # 编译镜像
 docker build -t $IMAGE .
