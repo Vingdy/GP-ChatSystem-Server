@@ -9,12 +9,12 @@ docker run --rm \
 
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
-
+docker login --username=100004230223 ccr.ccs.tencentyun.com
 echo $IMAGE
 # 编译镜像
 docker build -t $IMAGE .
 
-docker tag latest $IMAGE
+#docker tag latest $IMAGE
 # 上传镜像 (请提前登录好,docker login 只需登录一次)
 docker push $IMAGE
 
