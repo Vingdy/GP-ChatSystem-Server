@@ -12,9 +12,9 @@ WORKDIR /src/GP
 
 #COPY . /go/src/
 
-ENV PORT 9090
+ENV PORT 80
 
-EXPOSE 9090
+EXPOSE 80
 
 RUN go build main.go
 
