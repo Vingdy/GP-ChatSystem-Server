@@ -9,6 +9,10 @@ docker run --rm \
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
+vim Dockerfile
+:set ff=unix
+:wq
+
 # 编译镜像
 docker build -t $IMAGE .
 
