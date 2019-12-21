@@ -21,4 +21,5 @@ docker push $IMAGE
 
 # 清理
 docker rmi $IMAGE
-rm go_gp
+
+rm GP
