@@ -16,7 +16,7 @@ ENV PORT 9090
 
 EXPOSE 9090
 
-RUN chmod 777 GP
+RUN chmod 777 /src/GP
 
 CMD ["/src/GP"]
 
