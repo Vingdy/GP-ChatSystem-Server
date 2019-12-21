@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # 编译代码
 #docker run --rm \
