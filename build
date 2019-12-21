@@ -12,7 +12,7 @@ IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 # 编译镜像
 docker build -t $IMAGE .
 
-docker run -d 80:80 $IMAGE
+docker run -p 80:80 $IMAGE
 
 #docker tag 705105278/go_gp $IMAGES
 
