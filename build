@@ -2,8 +2,8 @@
 
 # 编译代码
 docker run \
-  -v $PWD:/go/src/GP \
-  -w /go/src/GP \
+  -v $PWD:/src/GP \
+  -w /src/GP \
   -p 80:80 \
   golang:alpine go build
 
