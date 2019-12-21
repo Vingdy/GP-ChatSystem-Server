@@ -6,6 +6,7 @@ MAINTAINER Ving<"705105278@qq.com">
 #COPY GP /bin/GP
 
 RUN mkdir -p /go/src
+
 WORKDIR /go/src/
 
 COPY . /go/src/
@@ -14,7 +15,7 @@ ENV PORT 9090
 
 EXPOSE 9090
 
-RUN chmod 777 main
+RUN chmod 777 GP
 
 CMD ["/go/src/GP"]
 
