@@ -16,11 +16,11 @@ ENV PORT 9090
 
 EXPOSE 9090
 
-RUN go build src/main.go
+RUN go build src/GP/main.go
 
-RUN chmod 777 /src/main
+RUN chmod 777 /src/GP/main
 
-CMD ["/src/main"]
+CMD ["/src/GP/main"]
 
 #EXPOSE 80
 #最终运行docker的命令
