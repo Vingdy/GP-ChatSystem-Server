@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # 编译代码
-docker run \
-  -v $PWD:GP \
-  -w GP \
-  -p 80:80 \
-  golang:apline go build
+#docker run \
+#  -v $PWD:GP \
+#  -w GP \
+#  -p 80:80 \
+#  golang:apline go build
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
 # 编译镜像
 docker build -t $IMAGE .
 
-#docker run -p 8000:8000 --name go-test $IMAGE
+docker run -p 80:80 --name go-test $IMAGE
 
 #docker tag 705105278/go_gp $IMAGES
 
