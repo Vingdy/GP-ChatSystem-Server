@@ -20,6 +20,6 @@ docker tag 705105278/go_gp $IMAGES
 docker push $IMAGE
 
 # 清理
-docker rmi $IMAGE
+#docker rmi $IMAGE
 
 #rm GP
