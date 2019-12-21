@@ -5,7 +5,7 @@ docker run --rm \
   -v $PWD:/go/src/GP \
   -w /go/src/GP \
   -p 80:80 \
-  golang:latest go build
+  golang:1.12.14 go build
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
