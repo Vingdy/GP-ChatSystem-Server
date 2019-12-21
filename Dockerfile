@@ -21,4 +21,4 @@ EXPOSE 9090
 
 #EXPOSE 80
 #最终运行docker的命令
-#CMD ["./GP"]
+CMD ["./GP"]
