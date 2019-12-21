@@ -14,7 +14,7 @@ echo $IMAGE
 # 编译镜像
 docker build -t $IMAGE .
 
-#docker tag repository:tag $IMAGE
+docker tag 705105278/go_gp $IMAGES
 
 # 上传镜像 (请提前登录好,docker login 只需登录一次)
 docker push $IMAGE
