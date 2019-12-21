@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 编译代码
-docker run --rm \
+docker run \
   -v $PWD:/go/src/GP \
   -w /go/src/GP \
   -p 80:80 \
