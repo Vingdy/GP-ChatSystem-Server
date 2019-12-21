@@ -22,4 +22,4 @@ docker push $IMAGE
 # 清理
 docker rmi $IMAGE
 
-rm GP
+#rm GP
