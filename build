@@ -2,10 +2,10 @@
 
 # 编译代码
 docker run \
-  -v $PWD:/src/GP \
-  -w /src/GP \
+  -v $PWD:GP \
+  -w GP \
   -p 80:80 \
-  golang:alpine go build
+  golang:apline go build
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
