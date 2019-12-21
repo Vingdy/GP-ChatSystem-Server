@@ -12,12 +12,14 @@ IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 # 编译镜像
 docker build -t $IMAGE .
 
+docker run -p 8000:8000 --name go-test $IMAGE
+
 docker tag 705105278/go_gp $IMAGES
 
 # 上传镜像 (请提前登录好,docker login 只需登录一次)
 docker push $IMAGE
 
 # 清理
-docker rmi $IMAGE
+#docker rmi $IMAGE
 
 rm GP
