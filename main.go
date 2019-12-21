@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		writer.Write([]byte("Here is the home page."))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Here is the home page."))
 	})
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
