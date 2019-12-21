@@ -1,10 +1,10 @@
 #! /bin/bash
 
 # 编译代码
-docker run --rm \
-  -v $PWD:/go/src/GP \
-  -w /go/src/GP \
-  golang:alpine go build
+#docker run --rm \
+#  -v $PWD:/go/src/GP \
+#  -w /go/src/GP \
+#  golang:alpine go build
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
@@ -17,6 +17,6 @@ docker tag 705105278/go_gp $IMAGES
 docker push $IMAGE
 
 # 清理
-#docker rmi $IMAGE
+docker rmi $IMAGE
 
-#rm GP
+rm GP
