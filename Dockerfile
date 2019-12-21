@@ -16,7 +16,7 @@ EXPOSE 9090
 
 RUN chmod 777 main
 
-CMD ["/go/src/main"]
+CMD ["/go/src/GP"]
 
 #EXPOSE 80
 #最终运行docker的命令
