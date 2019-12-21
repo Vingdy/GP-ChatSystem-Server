@@ -11,9 +11,9 @@ COPY GP /bin/GP
 
 #COPY . /go/src/
 
-ENV PORT 9090
+#ENV PORT 9090
 
-EXPOSE 9090
+#EXPOSE 9090
 
 #RUN chmod 777 GP
 
