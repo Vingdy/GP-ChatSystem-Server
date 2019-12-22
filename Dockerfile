@@ -10,18 +10,8 @@ COPY . /src/GP
 
 WORKDIR /src/GP
 
-#COPY . /go/src/
-
-#ENV PORT 80
-
-#EXPOSE 80
-
 RUN go build main.go
 
 RUN chmod 777 main
 
 CMD ["./main"]
-
-#EXPOSE 80
-#最终运行docker的命令
-#CMD ["GP"]
