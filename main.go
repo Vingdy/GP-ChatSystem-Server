@@ -2,12 +2,19 @@
 package main
 
 import (
+	"GP/db"
+	"GP/router"
+	"log"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Here is the home page."))
-	})
-	http.ListenAndServe(":80", nil)
+
+	db.InitMySql()
+	db.InitTable()
+
+	err := http.ListenAndServe(":80", router.SetRouter())
+	if err == nil {
+		log.Println(err)
+	}
 }
