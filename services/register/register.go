@@ -1,4 +1,4 @@
-package services
+package register
 
 import (
 	"GP/db"

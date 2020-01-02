@@ -1,8 +1,10 @@
 package model
 
 type Token   struct {
-	username    string `json:"username"`
+	UserName    string `json:"username"`
 	AccessToken string `json:"accesstoken"`
 	ExpiresAt   int64  `json:"expires_at"`
-	Timestamp   int64  `json:"timestamp"`
+	RefreshToken string `json:"refreshtoken"`
+	RefreshAt   int64  `json:"refresh_at"`
+	CreateAt   int64  `json:"create_at"`
 }

@@ -3,7 +3,7 @@ package controller
 import (
 	"GP/constant"
 	"GP/model"
-	"GP/services"
+	"GP/services/register"
 	"GP/utils"
 	"encoding/json"
 	"io/ioutil"
@@ -48,7 +48,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	find, err := services.RegisterAccCheck(newUser.UserName)
+	find, err := register.RegisterAccCheck(newUser.UserName)
 	if find {
 		fb.FbCode(constant.ACCOUNT_HAS_BEEN_REGISTER).FbMsg("account has been register").Response()
 		return
@@ -59,7 +59,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	err = services.Register(newUser.UserName, newUser.PassWord, newUser.NickName)
+	err = register.Register(newUser.UserName, newUser.PassWord, newUser.NickName)
 	if err != nil {
 		errmsg := "Register data write into database error:"+err.Error()
 		log.Println(errmsg)

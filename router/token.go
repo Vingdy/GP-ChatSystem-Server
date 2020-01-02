@@ -1,21 +1,16 @@
 package router
 
 import (
-	"GP/constant"
-	"GP/model"
-	"GP/utils"
-	"encoding/json"
+	"GP/services/login"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"io/ioutil"
-	"log"
 	"net/http"
 )
 
 func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fb := utils.NewFeedBack(w)
-		body, err := ioutil.ReadAll(r.Body)
+		//fb := utils.NewFeedBack(w)
+		/*body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			errmsg := "read body error:" + err.Error()
 			log.Println(errmsg)
@@ -29,12 +24,24 @@ func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 			log.Println(errmsg)
 			fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 			return
-		}
-		authorization := check.AccessToken
+		}*/
+
+		head := r.Header
+		fmt.Println(head)
+		accessToken := head.Get("AccessToken")
+		fmt.Println(accessToken)
+
+		password,_ := login.GetPassword("test")
+		fmt.Println(password)
+
+		authorization := accessToken
+		fmt.Println(authorization)
+
 		token, err := jwt.Parse(authorization, func(token *jwt.Token) (i interface{}, e error) {
-			return []byte("vector.sign"), nil
+			return []byte(password), nil
 		})
 		if err != nil {
+			fmt.Println(err)
 			if err, ok := err.(*jwt.ValidationError); ok {
 				if err.Errors&jwt.ValidationErrorMalformed != 0 {
 					return

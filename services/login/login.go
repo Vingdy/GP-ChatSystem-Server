@@ -1,4 +1,4 @@
-package services
+package login
 
 import (
 	"GP/db"
@@ -46,4 +46,29 @@ func Login(username, password string) (userInfo []*model.User, err error) {
 		userInfo = append(userInfo, &user)
 	}
 	return userInfo, nil
+}
+
+func GetPassword(username string) (password string, err error) {
+	//password = string
+	querySql := "select password from gp.user where username = ?;"
+	stmt, err := db.DB.Prepare(querySql)
+	if err != nil {
+		log.Println("GetPassword Querysql prepare fail")
+		return "", err
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query(username)
+	if err != nil {
+		log.Println("GetPassword Querysql query fail")
+		return "", err
+	}
+	for rows.Next() {
+		var user string
+		err := rows.Scan(&user)
+		if err != nil {
+			return "", err
+		}
+		password = user
+	}
+	return password, nil
 }
