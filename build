@@ -1,19 +1,27 @@
-#! /bin/bash
+#!/bin/bash
 
 # 编译代码
-docker run --rm \
-  -v $PWD:/go/src/GP \
-  -w /go/src/GP \
-  golang:alpine go build
+#docker run \
+#  -v $PWD:GP \
+#  -w GP \
+#  -p 80:80 \
+#  golang:apline go build
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
 # 编译镜像
 docker build -t $IMAGE .
 
+docker stop go_gp
+
+docker run -d --name=go_gp --rm -p 80:80 $IMAGE
+
+#docker tag 705105278/go_gp $IMAGES
+
 # 上传镜像 (请提前登录好,docker login 只需登录一次)
 docker push $IMAGE
 
 # 清理
 docker rmi $IMAGE
-rm go_gp
+
+#rm GP
