@@ -12,7 +12,7 @@ IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 # 编译镜像
 docker build -t $IMAGE .
 
-docker stop go_gp
+docker stop go_gp || true && docker rm go_gp || true
 
 docker run -d --name=go_gp --rm -p 80:80 $IMAGE
 
