@@ -9,8 +9,9 @@
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
-if [ docker stop go_gp || true && docker rm go_gp || true ]; then
-   docker stop go_gp && docker rm -f go_gp
+NAME="go_gp"
+if docker ps | awk -v NAME="$NAME" 'NR > 1 && $NF == NAME{ret=1; exit} END{exit !ret}'; then
+  docker stop "$NAME" && docker rm -f "$NAME"
 fi
 
 
