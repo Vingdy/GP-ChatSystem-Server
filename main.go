@@ -9,5 +9,5 @@ func main() {
 }
 
 func newPage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "New Page!")
+	fmt.Fprintln(w, "This is New Page!")
 }
