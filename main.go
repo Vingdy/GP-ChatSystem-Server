@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
 func main() {
 	http.HandleFunc("/", newPage)
 	err := http.ListenAndServe(":80",nil)
