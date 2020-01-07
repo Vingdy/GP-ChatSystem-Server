@@ -1,5 +1,13 @@
 package main
 
 func main() {
-	println("hello world")
+	http.HandleFunc("/", newPage)
+	err := http.ListenAndServe(":80",nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func newPage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "New Page!")
 }
