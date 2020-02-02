@@ -2,13 +2,19 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Here is the home page."))
-	})
+	http.HandleFunc("/", newPage)
+	err := http.ListenAndServe(":80",nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
-	http.ListenAndServe(":80", nil)
+func newPage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "This is New Page!")
 }
