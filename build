@@ -6,8 +6,6 @@ docker run --rm \
   -w /go/src/GP \
   golang:alpine go build
 
-
-
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
 echo $IMAGE
@@ -20,6 +18,6 @@ docker tag 705105278/go_gp $IMAGES
 docker push $IMAGE
 
 # 清理
-#docker rmi $IMAGE
+docker rmi $IMAGE
 
 #rm GP
