@@ -9,12 +9,17 @@
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
-docker stop go_gp || true && docker rm go_gp || true
+docker container stop go_gp
+
+docker container rm go_gp
 
 #NAME="go_gp"
 #if docker ps | awk -v NAME="$NAME" 'NR > 1 && $NF == NAME{ret=1; exit} END{exit !ret}'; then
 #  docker stop "$NAME" && docker rm -f "$NAME"
 #fi
+
+# 清理
+docker rmi $IMAGE
 
 # 编译镜像
 docker build -t $IMAGE .
@@ -26,7 +31,4 @@ docker run -d --name=go_gp --rm -p 80:80 $IMAGE
 # 上传镜像 (请提前登录好,docker login 只需登录一次)
 docker push $IMAGE
 
-# 清理
-docker rmi $IMAGE --force
-
-rm GP
+#rm GP
