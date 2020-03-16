@@ -19,7 +19,7 @@ docker container rm go_gp
 #fi
 
 # 清理
-docker rmi $IMAGE
+docker image rm $IMAGE
 
 # 编译镜像
 docker build -t $IMAGE .
