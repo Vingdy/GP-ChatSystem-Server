@@ -6,11 +6,11 @@ import (
 	"GP/services/login"
 	"GP/utils"
 	"encoding/json"
-	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
+	"github.com/dgrijalva/jwt-go"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +67,26 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//生成一条随机数据
+	/*signKey := sid.Id()//sid:8 byte time - 8 byte random
+	signKey = signKey[:32]
+	hashData, err := utils.AesEncryptCBC([]byte(userinfo[0].Id), []byte(signKey))
+	if err != nil {
+		errmsg := "hashData create fail:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	Data, err := utils.AesDecryptCBC([]byte(hashData), []byte(signKey))
+	if err != nil {
+		errmsg := "hashData create fail:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fmt.Println(string(hashData),string(Data),signKey)
+	u,_ := uuid.NewV4()
+	fmt.Println(u)*/
 	newToken := model.Token{}
 	//重新给token时间30min
 	expired := time.Now().Add(30 * time.Minute).Unix()
@@ -75,27 +95,28 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Issuer:    loginUser.UserName, // 可不必设置，也可以填充用户名，
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)   //生成token
-	accessToken, err := token.SignedString([]byte(loginUser.PassWord)) //签名
+	accessToken, err := token.SignedString([]byte("asign")) //签名
 	if err != nil {
 		return
 	}
 	//重新登录时间15天
-	refreshed := time.Now().Add(30 * time.Minute).Unix()
+	/*refreshed := time.Now().Add(30 * time.Minute).Unix()
 	refreshClaims := &jwt.StandardClaims{
 		ExpiresAt: refreshed,            // 过期时间，必须设置
 		Issuer:    loginUser.UserName, // 可不必设置，也可以填充用户名，
 	}
 	token = jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)   //生成token
-	refreshToken, err := token.SignedString([]byte(loginUser.PassWord)) //签名
+	refreshToken, err := token.SignedString([]byte("asign")) //签名
 	if err != nil {
 		return
-	}
+	}*/
 
-	newToken.RefreshToken = refreshToken
-	newToken.RefreshAt = refreshed
+	/*newToken.RefreshToken = refreshToken
+	newToken.RefreshAt = refreshed*/
+	newToken.UserName = userinfo[0].UserName
 	newToken.ExpiresAt = expired
 	newToken.AccessToken = accessToken
 	newToken.CreateAt = time.Now().Unix()
-
+	//fb.FbCode(constant.SUCCESS).FbMsg("login success").Response()
 	fb.FbCode(constant.SUCCESS).FbMsg("login success").FbData(newToken).Response()
 }

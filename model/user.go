@@ -7,6 +7,7 @@ type Register struct {
 }
 
 type User struct {
+	Id       string `json:"id"`
 	UserName string `json:"username"`
 	NickName string `json:"nickname"`
 	Role     string `json:"role"`

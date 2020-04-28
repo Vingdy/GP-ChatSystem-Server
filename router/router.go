@@ -12,6 +12,7 @@ func SetRouter() *mux.Router {
 	router.HandleFunc("/",AllowOrigin(TokenCheck(keep))).Methods("GET")
 	router.HandleFunc("/api/register", AllowOrigin(controller.Register)).Methods("POST", "OPTION")
 	router.HandleFunc("/api/login", AllowOrigin(controller.Login)).Methods("POST", "OPTION")
+	router.HandleFunc("/ws/chat", controller.WsMain)
 
 	return router
 }

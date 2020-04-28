@@ -25,7 +25,7 @@ func LoginAccCheck(username string) (ok bool, err error) {
 
 func Login(username, password string) (userInfo []*model.User, err error) {
 	userInfo = []*model.User{}
-	querySql := "select username,nickname,role from gp.user where username = ? and password = ?;"
+	querySql := "select id,username,nickname,role from gp.user where username = ? and password = ?;"
 	stmt, err := db.DB.Prepare(querySql)
 	if err != nil {
 		log.Println("Login Querysql prepare fail")
@@ -39,7 +39,7 @@ func Login(username, password string) (userInfo []*model.User, err error) {
 	}
 	for rows.Next() {
 		var user model.User
-		err := rows.Scan(&user.UserName, &user.NickName, &user.Role)
+		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role)
 		if err != nil {
 			return nil, err
 		}
@@ -72,3 +72,5 @@ func GetPassword(username string) (password string, err error) {
 	}
 	return password, nil
 }
+
+

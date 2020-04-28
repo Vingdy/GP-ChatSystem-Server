@@ -1,7 +1,6 @@
 package router
 
 import (
-	"GP/services/login"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
@@ -27,18 +26,19 @@ func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 		}*/
 
 		head := r.Header
-		fmt.Println(head)
+		//fmt.Println(head)
 		accessToken := head.Get("AccessToken")
-		fmt.Println(accessToken)
+		//fmt.Println(accessToken)
 
-		password,_ := login.GetPassword("test")
-		fmt.Println(password)
+
+		/*password,_ := login.GetPassword("test")
+		fmt.Println(password)*/
 
 		authorization := accessToken
-		fmt.Println(authorization)
+		//fmt.Println(authorization)
 
-		token, err := jwt.Parse(authorization, func(token *jwt.Token) (i interface{}, e error) {
-			return []byte(password), nil
+		_, err := jwt.Parse(authorization, func(token *jwt.Token) (i interface{}, e error) {
+			return []byte("asign"), nil
 		})
 		if err != nil {
 			fmt.Println(err)
@@ -53,8 +53,12 @@ func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 			}
 			return
 		}
-		finToken := token.Claims.(jwt.MapClaims) // 获取token里面的字段，如生成填入的username
-		fmt.Println(finToken)
+		/*finToken := token.Claims.(jwt.MapClaims) // 获取token里面的字段，如生成填入的username
+		fmt.Println(finToken)*/
 	})
+}
+
+func GetTokenInfo(token string) {
+
 }
 

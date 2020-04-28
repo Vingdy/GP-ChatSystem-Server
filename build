@@ -9,13 +9,10 @@
 
 IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
 
-docker container stop go_gp
-
-# 清理
-#docker rmi $IMAGE
-
 # 编译镜像
 docker build -t $IMAGE .
+
+docker stop go_gp
 
 docker run -d --name=go_gp --rm -p 80:80 $IMAGE
 
@@ -23,5 +20,8 @@ docker run -d --name=go_gp --rm -p 80:80 $IMAGE
 
 # 上传镜像 (请提前登录好,docker login 只需登录一次)
 docker push $IMAGE
+
+# 清理
+docker rmi $IMAGE
 
 #rm GP
