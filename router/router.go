@@ -4,6 +4,9 @@ import (
 	"GP/controller"
 	"github.com/gorilla/mux"
 	"net/http"
+	"GP/constant"
+	"GP/utils"
+	"fmt"
 )
 
 func SetRouter() *mux.Router {
@@ -18,7 +21,17 @@ func SetRouter() *mux.Router {
 }
 
 func keep(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Here is the home page."))
+	fb := utils.NewFeedBack(w)
+	fmt.Println(r.Header)
+	token := r.Header.Get("AccessToken")
+	fmt.Println(token)
+	info, err := GetTokenInfo(token)
+	fmt.Println(info)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbData(info).Response()
 }
 
 func AllowOrigin(next http.HandlerFunc) http.HandlerFunc {

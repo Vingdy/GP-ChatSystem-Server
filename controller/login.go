@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"time"
 	"github.com/dgrijalva/jwt-go"
+	"GP/redis"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +90,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(u)*/
 	newToken := model.Token{}
 	//重新给token时间30min
-	expired := time.Now().Add(30 * time.Minute).Unix()
+	expired := time.Now().Add(60 * time.Minute).Unix()
 	accessClaims := &jwt.StandardClaims{
 		ExpiresAt: expired,            // 过期时间，必须设置
 		Issuer:    loginUser.UserName, // 可不必设置，也可以填充用户名，
@@ -97,6 +98,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)   //生成token
 	accessToken, err := token.SignedString([]byte("asign")) //签名
 	if err != nil {
+		errmsg := "token create error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
 	//重新登录时间15天
@@ -118,5 +122,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	newToken.AccessToken = accessToken
 	newToken.CreateAt = time.Now().Unix()
 	//fb.FbCode(constant.SUCCESS).FbMsg("login success").Response()
-	fb.FbCode(constant.SUCCESS).FbMsg("login success").FbData(newToken).Response()
+	buffer, err := json.Marshal(userinfo[0])
+	if err != nil {
+		errmsg := "buffer json marshal failed:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	if err = redis.Redis.Set(accessToken, buffer, 60 * time.Minute).Err();err != nil {
+		errmsg := "redis set token failed:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	w.Header().Set("AccessToken", accessToken)
+	fb.FbCode(constant.SUCCESS).FbMsg("login success").FbData(userinfo[0]).Response()
 }
