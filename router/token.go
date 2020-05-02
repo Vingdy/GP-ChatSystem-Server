@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
-	"GP/redis"
-	"GP/model"
-	"encoding/json"
 	"GP/utils"
 	"GP/constant"
 )
@@ -67,18 +64,3 @@ func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 		fmt.Println(finToken)*/
 	})
 }
-
-func GetTokenInfo(token string) (userinfo model.User, err error){
-	jsoninfo, err := redis.Redis.Get(token).Bytes()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	err = json.Unmarshal(jsoninfo, &userinfo)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	return
-}
-
