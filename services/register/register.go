@@ -20,16 +20,16 @@ func RegisterAccCheck(username string) (ok bool, err error) {
 }
 
 func Register(username, password, nickname string) (err error) {
-	insertSql := "insert into gp.user(username, password, nickname, role) values (?, ?, ?, \"member\")"
+	insertSql := "insert into gp.user(username, password, nickname, phone, label, head, role) values (?, ?, ?, '', '', '', \"member\")"
 	stmt, err := db.DB.Prepare(insertSql)
 	if err != nil {
-		log.Println("register insertSql fail")
+		log.Println("Register insertSql fail")
 		return err
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(username, password, nickname)
 	if err != nil {
-		log.Println("register exec fail")
+		log.Println("Register exec fail")
 		return err
 	}
 	return nil

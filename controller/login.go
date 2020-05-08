@@ -136,5 +136,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("AccessToken", accessToken)
+	userinfo[0].Token = accessToken
 	fb.FbCode(constant.SUCCESS).FbMsg("login success").FbData(userinfo[0]).Response()
 }
