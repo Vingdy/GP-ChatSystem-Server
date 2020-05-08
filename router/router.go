@@ -24,6 +24,12 @@ func SetRouter() *mux.Router {
 	router.HandleFunc("/api/banuser", AllowOrigin(controller.BanUser)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/cancelbanuser", AllowOrigin(controller.CancelBanUser)).Methods("POST", "OPTIONS")
 
+	router.HandleFunc("/api/getoneroom", AllowOrigin(controller.GetOneRoom)).Methods("GET")
+	router.HandleFunc("/api/getroomlist", AllowOrigin(controller.GetRoomList)).Methods("GET")
+	router.HandleFunc("/api/createroom", AllowOrigin(controller.CreateRoom)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/banroom", AllowOrigin(controller.BanRoom)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/cancelbanroom", AllowOrigin(controller.CancelBanRoom)).Methods("POST", "OPTIONS")
+
 	return router
 }
 
