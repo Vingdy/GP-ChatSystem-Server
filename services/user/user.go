@@ -4,6 +4,7 @@ import (
 	"GP/db"
 	"log"
 	"GP/model"
+	"database/sql"
 )
 
 func GetOneUser(username string) (userInfo []*model.User, err error) {
@@ -151,3 +152,19 @@ func FindUser(findstring string) (userInfo []*model.User, err error) {
 	}
 	return userInfo, nil
 }
+
+func GetUserRole(username string) (role string, err error) {
+	querySql := "select role from gp.user where username = ?"
+	err = db.DB.QueryRow(querySql, username).Scan(&role)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Println("user not account found")
+			return "null", nil
+		} else {
+			log.Println("GetUserRole query fail" + err.Error())
+			return "null", err
+		}
+	}
+	return role, nil
+}
+

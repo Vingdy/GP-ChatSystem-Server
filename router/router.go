@@ -26,6 +26,7 @@ func SetRouter() *mux.Router {
 	router.HandleFunc("/api/upuserrole", AllowOrigin(controller.UpUserRole)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/downuserrole", AllowOrigin(controller.DownUserRole)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/finduser", AllowOrigin(controller.FindUser)).Methods("GET")
+	router.HandleFunc("/api/getuserrole", AllowOrigin(controller.GetUserRole)).Methods("GET")
 
 	router.HandleFunc("/api/getoneroom", AllowOrigin(controller.GetOneRoom)).Methods("GET")
 	router.HandleFunc("/api/getroomlist", AllowOrigin(controller.GetRoomList)).Methods("GET")

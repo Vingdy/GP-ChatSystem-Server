@@ -318,3 +318,17 @@ func FindUser(w http.ResponseWriter, r *http.Request) {
 	fb.FbCode(constant.SUCCESS).FbMsg("finduser success").FbData(userinfo).Response()
 }
 
+func GetUserRole(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	username := queryForm["username"][0]
+	role, err := user.GetUserRole(username)
+	if err != nil {
+		errmsg := "getuserrole from database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("get user role success").FbData(role).Response()
+}
+
