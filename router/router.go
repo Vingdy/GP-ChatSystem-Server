@@ -18,17 +18,25 @@ func SetRouter() *mux.Router {
 
 	router.HandleFunc("/ws/chat", controller.WsMain)
 
-	router.HandleFunc("/api/getuser", AllowOrigin(controller.GetUser)).Methods("GET")
+	router.HandleFunc("/api/getuser", AllowOrigin(controller.GetOneUser)).Methods("GET")
 	router.HandleFunc("/api/updateuser", AllowOrigin(controller.UpdateUser)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/updatepassword", AllowOrigin(controller.UpdatePassword)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/banuser", AllowOrigin(controller.BanUser)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/cancelbanuser", AllowOrigin(controller.CancelBanUser)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/upuserrole", AllowOrigin(controller.UpUserRole)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/downuserrole", AllowOrigin(controller.DownUserRole)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/finduser", AllowOrigin(controller.FindUser)).Methods("GET")
 
 	router.HandleFunc("/api/getoneroom", AllowOrigin(controller.GetOneRoom)).Methods("GET")
 	router.HandleFunc("/api/getroomlist", AllowOrigin(controller.GetRoomList)).Methods("GET")
 	router.HandleFunc("/api/createroom", AllowOrigin(controller.CreateRoom)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/banroom", AllowOrigin(controller.BanRoom)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/cancelbanroom", AllowOrigin(controller.CancelBanRoom)).Methods("POST", "OPTIONS")
+
+	router.HandleFunc("/api/getcheckfriend", AllowOrigin(controller.GetCheckFriend)).Methods("GET")
+	router.HandleFunc("/api/getfriendlist", AllowOrigin(controller.GetFriendList)).Methods("GET")
+	router.HandleFunc("/api/newfriend", AllowOrigin(controller.NewFriend)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/passfriend", AllowOrigin(controller.PassFriend)).Methods("POST", "OPTIONS")
 
 	return router
 }

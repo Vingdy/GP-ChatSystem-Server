@@ -9,49 +9,37 @@ import (
 	"encoding/json"
 	"GP/services/user"
 	"GP/model"
+	"net/url"
 )
 
 type UserNameParams struct {
 	UserName string `json:"username"`
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func GetOneUser(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		errmsg := "read body error:" + err.Error()
-		log.Println(errmsg)
-		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
-		return
-	}
-	loginUser := &UserNameParams{}
-	err = json.Unmarshal(body, loginUser)
-	if err != nil {
-		errmsg := "json unmarshal error:" + err.Error()
-		log.Println(errmsg)
-		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
-		return
-	}
+	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	username := queryForm["username"][0]
 
-	if len(loginUser.UserName) <= 0 {
-		errmsg := "UserName is empty"
+	if len(username) <= 0 {
+		errmsg := "username is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	userinfo, err := user.GetUser(loginUser.UserName)
+	userinfo, err := user.GetOneUser(username)
 	if len(userinfo) == 0 {
-		fb.FbCode(constant.PASSWORD_NOT_RIGHT).FbMsg("GetUser username not right").Response()
+		fb.FbCode(constant.PASSWORD_NOT_RIGHT).FbMsg("GetOneUser username not right").Response()
 		return
 	}
 	if err != nil {
-		errmsg := "GetUser from database error:" + err.Error()
+		errmsg := "GetOneUser from database error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	fb.FbCode(constant.SUCCESS).FbMsg("get user success").FbData(userinfo[0]).Response()
+	fb.FbCode(constant.SUCCESS).FbMsg("get one user success").FbData(userinfo[0]).Response()
 }
 
 type UpdateUserParams struct {
@@ -234,7 +222,7 @@ func CancelBanUser(w http.ResponseWriter, r *http.Request) {
 
 	err = user.CancelBanUser(params.UserName)
 	if err != nil {
-		errmsg := "Banuser into database error:" + err.Error()
+		errmsg := "CancelBanUser into database error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
@@ -242,4 +230,91 @@ func CancelBanUser(w http.ResponseWriter, r *http.Request) {
 	fb.FbCode(constant.SUCCESS).FbMsg("cancel banuser success").Response()
 }
 
+func UpUserRole(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		errmsg := "read body error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	params := &UserNameParams{}
+	err = json.Unmarshal(body, params)
+	if err != nil {
+		errmsg := "json unmarshal error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+
+	if len(params.UserName) <= 0 {
+		errmsg := "UserName is empty"
+		log.Println(errmsg)
+		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
+		return
+	}
+
+	err = user.UpUserRole(params.UserName)
+	if err != nil {
+		errmsg := "UpUserRole into database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("upuserrole success").Response()
+}
+
+func DownUserRole(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		errmsg := "read body error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	params := &UserNameParams{}
+	err = json.Unmarshal(body, params)
+	if err != nil {
+		errmsg := "json unmarshal error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+
+	if len(params.UserName) <= 0 {
+		errmsg := "UserName is empty"
+		log.Println(errmsg)
+		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
+		return
+	}
+
+	err = user.DownUserRole(params.UserName)
+	if err != nil {
+		errmsg := "DownUserRole into database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("downuserrole success").Response()
+}
+
+type FindStringParams struct {
+	FindString string `json:"findstring"`
+}
+
+func FindUser(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	findstring := queryForm["findstring"][0]
+	userinfo, err := user.FindUser(findstring)
+	if err != nil {
+		errmsg := "FindUser into database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("finduser success").FbData(userinfo).Response()
+}
 

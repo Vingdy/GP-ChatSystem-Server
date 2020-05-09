@@ -6,7 +6,7 @@ import (
 	"GP/model"
 )
 
-func GetUser(username string) (userInfo []*model.User, err error) {
+func GetOneUser(username string) (userInfo []*model.User, err error) {
 	userInfo = []*model.User{}
 	querySql := "select username, password, nickname, role, phone, label, head, isban from gp.user where username = ?;"
 	stmt, err := db.DB.Prepare(querySql)
@@ -93,4 +93,61 @@ func CancelBanUser(username string) (err error) {
 		return err
 	}
 	return nil
+}
+
+func UpUserRole(username string) (err error) {
+	updateSql := "update gp.user set role = 'manager' where username = ?"
+	stmt, err := db.DB.Prepare(updateSql)
+	if err != nil {
+		log.Println("UpUserRole updateSql fail")
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(username)
+	if err != nil {
+		log.Println("UpUserRole exec fail")
+		return err
+	}
+	return nil
+}
+
+func DownUserRole(username string) (err error) {
+	updateSql := "update gp.user set role = 'member' where username = ?"
+	stmt, err := db.DB.Prepare(updateSql)
+	if err != nil {
+		log.Println("DownUserRoleupdateSql fail")
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(username)
+	if err != nil {
+		log.Println("DownUserRole exec fail")
+		return err
+	}
+	return nil
+}
+
+func FindUser(findstring string) (userInfo []*model.User, err error) {
+	userInfo = []*model.User{}
+	querySql := "select username, password, nickname, role, phone, label, head, isban from gp.user where username like ? or nickname like ? or label like ?;"
+	stmt, err := db.DB.Prepare(querySql)
+	if err != nil {
+		log.Println("FindUser Querysql prepare fail")
+		return nil, err
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query("%"+findstring+"%", "%"+findstring+"%", "%"+findstring+"%")
+	if err != nil {
+		log.Println("FindUser Querysql query fail")
+		return nil, err
+	}
+	for rows.Next() {
+		var user model.User
+		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role , &user.Phone, &user.Label, &user.Head, &user.IsBan)
+		if err != nil {
+			return nil, err
+		}
+		userInfo = append(userInfo, &user)
+	}
+	return userInfo, nil
 }
