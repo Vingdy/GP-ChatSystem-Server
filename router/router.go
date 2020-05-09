@@ -38,6 +38,9 @@ func SetRouter() *mux.Router {
 	router.HandleFunc("/api/newfriend", AllowOrigin(controller.NewFriend)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/passfriend", AllowOrigin(controller.PassFriend)).Methods("POST", "OPTIONS")
 
+	router.HandleFunc("/api/getcommentlist", AllowOrigin(controller.GetCommentList)).Methods("GET")
+	router.HandleFunc("/api/newcomment", AllowOrigin(controller.NewComment)).Methods("POST", "OPTIONS")
+
 	return router
 }
 

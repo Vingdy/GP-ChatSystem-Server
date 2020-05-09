@@ -29,18 +29,18 @@ func NewComment(username, fromusername, fromnickname, comment, time string) (err
 	return nil
 }
 
-func FindComment(username string) (commentInfo []*CommentInfo, err error) {
+func GetCommentList(username string) (commentInfo []*CommentInfo, err error) {
 	commentInfo = []*CommentInfo{}
 	querySql := "select username, fromusername, fromnickname, comment, time from gp.comment where username = ?;"
 	stmt, err := db.DB.Prepare(querySql)
 	if err != nil {
-		log.Println("GetCheckFriend Querysql prepare fail")
+		log.Println("GetCommentList Querysql prepare fail")
 		return nil, err
 	}
 	defer stmt.Close()
 	rows, err := stmt.Query(username)
 	if err != nil {
-		log.Println("GetCheckFriend Querysql query fail")
+		log.Println("GetCommentList Querysql query fail")
 		return nil, err
 	}
 	for rows.Next() {
