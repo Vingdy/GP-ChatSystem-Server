@@ -8,9 +8,12 @@ import (
 	"GP/constant"
 	"encoding/json"
 	"GP/services/user"
-	"GP/model"
 	"net/url"
 )
+
+type UserIdParams struct {
+	UserId string `json:"id"`
+}
 
 type UserNameParams struct {
 	UserName string `json:"username"`
@@ -18,36 +21,56 @@ type UserNameParams struct {
 
 func GetOneUser(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	queryForm,err := url.ParseQuery(r.URL.RawQuery)
-	username := queryForm["username"][0]
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
+	if queryForm["id"] == nil {
+		errmsg := "query id is nil"
+		log.Println(errmsg)
+		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
+		return
+	}
+	id := queryForm["id"][0]
 
-	if len(username) <= 0 {
-		errmsg := "username is empty"
+	if len(id) <= 0 {
+		errmsg := "id is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	userinfo, err := user.GetOneUser(username)
-	if len(userinfo) == 0 {
-		fb.FbCode(constant.PASSWORD_NOT_RIGHT).FbMsg("GetOneUser username not right").Response()
-		return
-	}
+	userinfo, err := user.GetOneUser(id)
 	if err != nil {
 		errmsg := "GetOneUser from database error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
+	if len(userinfo) == 0 {
+		fb.FbCode(constant.PASSWORD_NOT_RIGHT).FbMsg("GetOneUser id not right").Response()
+		return
+	}
 	fb.FbCode(constant.SUCCESS).FbMsg("get one user success").FbData(userinfo[0]).Response()
 }
 
+func GetUserList(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+
+	userinfo, err := user.GetUserList()
+	if err != nil {
+		errmsg := "GetUserList from database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("get user list success").FbData(userinfo).Response()
+}
+
 type UpdateUserParams struct {
-	UserName string `json:"username"`
+	UserId string `json:"id"`
 	NickName string `json:"nickname"`
 	Phone 	 string `json:"phone"`
 	Label 	 string `json:"label"`
-	Head 	 string `json:"head"`
+	FontType 	 string `json:"fonttype"`
+	FontColor string `json:"fontcolor"`
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -68,8 +91,8 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.UserName) <= 0 {
-		errmsg := "UserName is empty"
+	if len(params.UserId) <= 0 {
+		errmsg := "UserId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
@@ -96,14 +119,21 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.Head) <= 0 {
-		errmsg := "Head is empty"
+	if len(params.FontType) <= 0 {
+		errmsg := "FontType is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	err = user.UpdateUser(params.UserName, params.NickName, params.Phone, params.Label, params.Label)
+	if len(params.FontColor) <= 0 {
+		errmsg := "FontColor is empty"
+		log.Println(errmsg)
+		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
+		return
+	}
+
+	err = user.UpdateUser(params.UserId, params.NickName, params.Phone, params.Label, params.FontType, params.FontColor)
 	if err != nil {
 		errmsg := "UpdateUser into database error:" + err.Error()
 		log.Println(errmsg)
@@ -114,7 +144,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdatePasswordParams struct {
-	UserName string `json:"username"`
+	UserId string `json:"id"`
 	PassWord string `json:"password"`
 }
 
@@ -127,7 +157,7 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &model.Login{}
+	params := &UpdatePasswordParams{}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -136,8 +166,8 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.UserName) <= 0 {
-		errmsg := "UserName is empty"
+	if len(params.UserId) <= 0 {
+		errmsg := "UserId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
@@ -150,7 +180,7 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = user.UpdatePassword(params.UserName, params.PassWord)
+	err = user.UpdatePassword(params.UserId, params.PassWord)
 	if err != nil {
 		errmsg := "UpdatePassword into database error:" + err.Error()
 		log.Println(errmsg)
@@ -169,7 +199,7 @@ func BanUser(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &UserNameParams {}
+	params := &UserIdParams {}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -178,14 +208,14 @@ func BanUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.UserName) <= 0 {
-		errmsg := "UserName is empty"
+	if len(params.UserId) <= 0 {
+		errmsg := "UserId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	err = user.BanUser(params.UserName)
+	err = user.BanUser(params.UserId)
 	if err != nil {
 		errmsg := "Banuser into database error:" + err.Error()
 		log.Println(errmsg)
@@ -204,7 +234,7 @@ func CancelBanUser(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &UserNameParams {}
+	params := &UserIdParams {}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -213,14 +243,14 @@ func CancelBanUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.UserName) <= 0 {
-		errmsg := "UserName is empty"
+	if len(params.UserId) <= 0 {
+		errmsg := "UserId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	err = user.CancelBanUser(params.UserName)
+	err = user.CancelBanUser(params.UserId)
 	if err != nil {
 		errmsg := "CancelBanUser into database error:" + err.Error()
 		log.Println(errmsg)
@@ -239,7 +269,7 @@ func UpUserRole(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &UserNameParams{}
+	params := &UserIdParams{}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -248,14 +278,14 @@ func UpUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.UserName) <= 0 {
-		errmsg := "UserName is empty"
+	if len(params.UserId) <= 0 {
+		errmsg := "UserId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	err = user.UpUserRole(params.UserName)
+	err = user.UpUserRole(params.UserId)
 	if err != nil {
 		errmsg := "UpUserRole into database error:" + err.Error()
 		log.Println(errmsg)
@@ -274,7 +304,7 @@ func DownUserRole(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &UserNameParams{}
+	params := &UserIdParams{}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -283,14 +313,14 @@ func DownUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.UserName) <= 0 {
-		errmsg := "UserName is empty"
+	if len(params.UserId) <= 0 {
+		errmsg := "UserId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	err = user.DownUserRole(params.UserName)
+	err = user.DownUserRole(params.UserId)
 	if err != nil {
 		errmsg := "DownUserRole into database error:" + err.Error()
 		log.Println(errmsg)

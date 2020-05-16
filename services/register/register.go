@@ -20,7 +20,7 @@ func RegisterAccCheck(username string) (ok bool, err error) {
 }
 
 func Register(username, password, nickname string) (err error) {
-	insertSql := "insert into gp.user(username, password, nickname, phone, label, head, role) values (?, ?, ?, '', '', '', \"member\")"
+	insertSql := "insert into gp.user(username, password, nickname, phone, label, fonttype, fontcolor, role, isban) values (?, ?, ?, '', '', '宋体','#000000', 'member', '0')"
 	stmt, err := db.DB.Prepare(insertSql)
 	if err != nil {
 		log.Println("Register insertSql fail")

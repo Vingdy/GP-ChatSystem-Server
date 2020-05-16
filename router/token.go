@@ -51,7 +51,7 @@ func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 				}
 				if err.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
 					errmsg := err.Error()
-					fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+					fb.FbCode(constant.TOKEN_IS_EXPIRED).FbMsg(errmsg).Response()
 					return
 				}
 			}

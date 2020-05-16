@@ -12,6 +12,7 @@ import (
 	"time"
 	"github.com/dgrijalva/jwt-go"
 	"GP/redis"
+	"fmt"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -57,14 +58,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userinfo, err := login.Login(loginUser.UserName, loginUser.PassWord)
-	if len(userinfo) == 0 {
-		fb.FbCode(constant.PASSWORD_NOT_RIGHT).FbMsg("password not right").Response()
-		return
-	}
 	if err != nil {
 		errmsg := "Login data write into database error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	if len(userinfo) == 0 {
+		fb.FbCode(constant.PASSWORD_NOT_RIGHT).FbMsg("password not right").Response()
+		return
+	}
+	if userinfo[0].IsBan == "1"{
+		fb.FbCode(constant.ACCOUNT_HAS_BEEN_BAN).FbMsg("account has been ban").Response()
 		return
 	}
 
@@ -122,6 +127,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	newToken.AccessToken = accessToken
 	newToken.CreateAt = time.Now().Unix()
 	//fb.FbCode(constant.SUCCESS).FbMsg("login success").Response()
+	userinfo[0].Token = accessToken
 	buffer, err := json.Marshal(userinfo[0])
 	if err != nil {
 		errmsg := "buffer json marshal failed:" + err.Error()
@@ -129,6 +135,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
+	fmt.Println("userinfo:", userinfo[0])
 	if err = redis.Redis.Set(accessToken, buffer, 60 * time.Minute).Err();err != nil {
 		errmsg := "redis set token failed:" + err.Error()
 		log.Println(errmsg)
@@ -138,4 +145,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("AccessToken", accessToken)
 	userinfo[0].Token = accessToken
 	fb.FbCode(constant.SUCCESS).FbMsg("login success").FbData(userinfo[0]).Response()
+}
+
+func LogOut(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	token := r.Header.Get("AccessToken")
+	if err := redis.Redis.Del(token).Err();err != nil {
+		errmsg := "redis del token failed:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("logout success").Response()
 }

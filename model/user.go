@@ -7,15 +7,16 @@ type Register struct {
 }
 
 type User struct {
-	Id       string `json:"id"`
-	UserName string `json:"username"`
-	NickName string `json:"nickname"`
-	Role     string `json:"role"`
-	Phone 	 string `json:"phone"`
-	Label 	 string `json:"label"`
-	Head 	 string `json:"head"`
-	IsBan 	 string `json:"isban"`
-	Token    string `json:"token,omitempty"`
+	Id        string `json:"id"`
+	UserName  string `json:"username"`
+	NickName  string `json:"nickname"`
+	Role      string `json:"role"`
+	Phone     string `json:"phone"`
+	Label     string `json:"label"`
+	FontType  string `json:"fonttype"`
+	FontColor string `json:"fontcolor"`
+	IsBan     string `json:"isban"`
+	Token     string `json:"token,omitempty"`
 }
 
 type Login struct {

@@ -15,10 +15,12 @@ func SetRouter() *mux.Router {
 	router.HandleFunc("/",AllowOrigin(TokenCheck(keep))).Methods("GET")
 	router.HandleFunc("/api/register", AllowOrigin(controller.Register)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/login", AllowOrigin(controller.Login)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/logout", AllowOrigin(TokenCheck(controller.LogOut))).Methods("GET", "OPTIONS")
 
 	router.HandleFunc("/ws/chat", controller.WsMain)
 
-	router.HandleFunc("/api/getuser", AllowOrigin(controller.GetOneUser)).Methods("GET")
+	router.HandleFunc("/api/getoneuser", AllowOrigin(controller.GetOneUser)).Methods("GET")
+	router.HandleFunc("/api/getuserlist", AllowOrigin(controller.GetUserList)).Methods("GET")
 	router.HandleFunc("/api/updateuser", AllowOrigin(controller.UpdateUser)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/updatepassword", AllowOrigin(controller.UpdatePassword)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/banuser", AllowOrigin(controller.BanUser)).Methods("POST", "OPTIONS")
@@ -30,6 +32,7 @@ func SetRouter() *mux.Router {
 
 	router.HandleFunc("/api/getoneroom", AllowOrigin(controller.GetOneRoom)).Methods("GET")
 	router.HandleFunc("/api/getroomlist", AllowOrigin(controller.GetRoomList)).Methods("GET")
+	router.HandleFunc("/api/getuseroomlist", AllowOrigin(controller.GetUseRoomList)).Methods("GET")
 	router.HandleFunc("/api/createroom", AllowOrigin(controller.CreateRoom)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/banroom", AllowOrigin(controller.BanRoom)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/cancelbanroom", AllowOrigin(controller.CancelBanRoom)).Methods("POST", "OPTIONS")
@@ -63,6 +66,7 @@ func AllowOrigin(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+		w.Header().Add("Access-Control-Allow-Headers", "AccessToken") //header的类型
 		w.Header().Set("Content-Type", "application/json")
 		if r.Method == "OPTIONS" {
 			return

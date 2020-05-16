@@ -9,13 +9,14 @@ func InitTable() {
 	//用户数据库
 	err := execSQL(`CREATE TABLE IF NOT EXISTS gp.user(
 	id SERIAL NOT NULL,
-	username varchar(32) NOT NULL,
-	password varchar(32) NOT NULL,
-	nickname varchar(32) NOT NULL,
-	role varchar(32) NOT NULL,
-	phone varchar(32),
-	label varchar(50),
-	head varchar(100),
+	username varchar(30) NOT NULL,
+	password varchar(30) NOT NULL,
+	nickname varchar(30) NOT NULL,
+	role varchar(30) NOT NULL,
+	phone varchar(30),
+	label varchar(30),
+	fonttype varchar(30),
+	fontcolor varchar(30),
 	isban varchar(5) NOT NULL,
 	PRIMARY KEY (id),
 	UNIQUE KEY (username)
@@ -28,10 +29,10 @@ func InitTable() {
 
 	err = execSQL(`CREATE TABLE IF NOT EXISTS gp.friend(
 	id SERIAL NOT NULL,
-	username1 varchar(32),
-	nickname1 varchar(32),
-	username2 varchar(32),
-	nickname2 varchar(32),
+	username1 varchar(30),
+	nickname1 varchar(30),
+	username2 varchar(30),
+	nickname2 varchar(30),
 	ischeck varchar(5),
 	PRIMARY KEY (id)
 	);`)
@@ -43,7 +44,7 @@ func InitTable() {
 
 	err = execSQL(`CREATE TABLE IF NOT EXISTS gp.room(
 	id SERIAL NOT NULL,
-	roomname varchar(32) NOT NULL,
+	roomname varchar(30) NOT NULL,
 	isban varchar(5) NOT NULL,
 	PRIMARY KEY (id)
 	);`)
@@ -55,9 +56,11 @@ func InitTable() {
 
 	err = execSQL(`CREATE TABLE IF NOT EXISTS gp.history(
 	id SERIAL NOT NULL,
-	username varchar(32) NOT NULL,
-	chat varchar(32) NOT NULL,
-	time varchar(32) NOT NULL,
+	username varchar(30) NOT NULL,
+	chat varchar(200) NOT NULL,
+	fonttype varchar(30) NOT NULL,
+	fontcolor varchar(30) NOT NULL,
+	time varchar(30) NOT NULL,
 	PRIMARY KEY (id)
 	);`)
 	if err != nil {
@@ -68,11 +71,11 @@ func InitTable() {
 
 	err = execSQL(`CREATE TABLE IF NOT EXISTS gp.comment(
 	id SERIAL NOT NULL,
-	username varchar(32) NOT NULL,
+	username varchar(30) NOT NULL,
 	comment varchar(200) NOT NULL,
-	fromusername varchar(32) NOT NULL,
-	fromnickname varchar(32) NOT NULL,
-	time varchar(50) NOT NULL,
+	fromusername varchar(30) NOT NULL,
+	fromnickname varchar(30) NOT NULL,
+	time varchar(30) NOT NULL,
 	PRIMARY KEY (id)
 	);`)
 	if err != nil {
@@ -88,7 +91,7 @@ func InitTable() {
 		log.Println("table room data has been created")
 	}
 
-	err = execSQL(`INSERT INTO gp.user(username, password, nickname, role, phone, label, head, isban) SELECT 'admin','admin','admin','admin','', '','','0' FROM dual WHERE NOT EXISTS(SELECT * FROM gp.user WHERE username = 'admin');`)
+	err = execSQL(`INSERT INTO gp.user(username, password, nickname, role, phone, label, fonttype, fontcolor, isban) SELECT 'admin','admin','admin','admin','', '','宋体','#000000','0' FROM dual WHERE NOT EXISTS(SELECT * FROM gp.user WHERE username = 'admin');`)
 	if err != nil {
 		log.Panicln("init table user data failed " + err.Error())
 	} else {

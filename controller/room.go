@@ -11,6 +11,10 @@ import (
 	"GP/services/room"
 )
 
+type RoomIdParams struct {
+	RoomId string `json:"id"`
+}
+
 type RoomNameParams struct {
 	RoomName string `json:"roomname"`
 }
@@ -24,7 +28,7 @@ func CreateRoom(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := RoomNameParams{}
+	params := &RoomNameParams{}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -53,8 +57,8 @@ func CreateRoom(w http.ResponseWriter, r *http.Request) {
 func GetOneRoom(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
 	queryForm,err := url.ParseQuery(r.URL.RawQuery)
-	roomname := queryForm["roomname"][0]
-	oneroominfo, err := room.GetOneRoom(roomname)
+	id := queryForm["id"][0]
+	oneroominfo, err := room.GetOneRoom(id)
 	if err!=nil {
 		errmsg := "GetOneRoom from database error:" + err.Error()
 		log.Println(errmsg)
@@ -76,6 +80,18 @@ func GetRoomList(w http.ResponseWriter, r *http.Request) {
 	fb.FbCode(constant.SUCCESS).FbMsg("get room list success").FbData(roomlist).Response()
 }
 
+func GetUseRoomList(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	roomlist, err := room.GetUseRoomList()
+	if err!=nil {
+		errmsg := "GetUserRoomList from database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("get use room list success").FbData(roomlist).Response()
+}
+
 func CancelBanRoom(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
 	body, err := ioutil.ReadAll(r.Body)
@@ -85,7 +101,7 @@ func CancelBanRoom(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &RoomNameParams {}
+	params := &RoomIdParams {}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -94,14 +110,14 @@ func CancelBanRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.RoomName) <= 0 {
-		errmsg := "RoomName is empty"
+	if len(params.RoomId) <= 0 {
+		errmsg := "RoomId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	err = room.CancelBanRoom(params.RoomName)
+	err = room.CancelBanRoom(params.RoomId)
 	if err != nil {
 		errmsg := "Banroom into database error:" + err.Error()
 		log.Println(errmsg)
@@ -120,7 +136,7 @@ func BanRoom(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &RoomNameParams {}
+	params := &RoomIdParams {}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -129,14 +145,14 @@ func BanRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.RoomName) <= 0 {
-		errmsg := "RoomName is empty"
+	if len(params.RoomId) <= 0 {
+		errmsg := "RoomId is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	err = room.BanRoom(params.RoomName)
+	err = room.BanRoom(params.RoomId)
 	if err != nil {
 		errmsg := "Banroom into database error:" + err.Error()
 		log.Println(errmsg)
