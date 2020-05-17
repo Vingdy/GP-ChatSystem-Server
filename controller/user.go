@@ -11,6 +11,15 @@ import (
 	"net/url"
 )
 
+func GetOnline(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	var userinfo []int
+	for id := range AllClient {
+		userinfo = append(userinfo, id)
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("get online user success").FbData(userinfo).Response()
+}
+
 type UserIdParams struct {
 	UserId string `json:"id"`
 }

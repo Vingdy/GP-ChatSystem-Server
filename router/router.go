@@ -18,6 +18,7 @@ func SetRouter() *mux.Router {
 	router.HandleFunc("/api/logout", AllowOrigin(TokenCheck(controller.LogOut))).Methods("GET", "OPTIONS")
 
 	router.HandleFunc("/ws/chat", controller.WsMain)
+	router.HandleFunc("/api/getonline", AllowOrigin(controller.GetOnline)).Methods("GET")
 
 	router.HandleFunc("/api/getoneuser", AllowOrigin(controller.GetOneUser)).Methods("GET")
 	router.HandleFunc("/api/getuserlist", AllowOrigin(controller.GetUserList)).Methods("GET")
@@ -41,9 +42,12 @@ func SetRouter() *mux.Router {
 	router.HandleFunc("/api/getfriendlist", AllowOrigin(controller.GetFriendList)).Methods("GET")
 	router.HandleFunc("/api/newfriend", AllowOrigin(controller.NewFriend)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/passfriend", AllowOrigin(controller.PassFriend)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/unpassfriend", AllowOrigin(controller.UnPassFriend)).Methods("POST", "OPTIONS")
 
 	router.HandleFunc("/api/getcommentlist", AllowOrigin(controller.GetCommentList)).Methods("GET")
 	router.HandleFunc("/api/newcomment", AllowOrigin(controller.NewComment)).Methods("POST", "OPTIONS")
+
+	router.HandleFunc("/api/gethistorylist", AllowOrigin(controller.GetHistoryList)).Methods("GET")
 
 	return router
 }

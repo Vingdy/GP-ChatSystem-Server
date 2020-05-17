@@ -31,8 +31,10 @@ func InitTable() {
 	id SERIAL NOT NULL,
 	username1 varchar(30),
 	nickname1 varchar(30),
+	id2 varchar(30),
 	username2 varchar(30),
 	nickname2 varchar(30),
+	label2 varchar(30),
 	ischeck varchar(5),
 	PRIMARY KEY (id)
 	);`)
@@ -56,8 +58,10 @@ func InitTable() {
 
 	err = execSQL(`CREATE TABLE IF NOT EXISTS gp.history(
 	id SERIAL NOT NULL,
+	roomname varchar(30) NOT NULL,
 	username varchar(30) NOT NULL,
 	chat varchar(200) NOT NULL,
+	label varchar(20) NOT NULL,
 	fonttype varchar(30) NOT NULL,
 	fontcolor varchar(30) NOT NULL,
 	time varchar(30) NOT NULL,

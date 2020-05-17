@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"GP/services/comment"
+	"time"
 )
 
 func GetCommentList(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +39,6 @@ type NewCommentParams struct {
 	FromUserName string `json:"fromusername"`
 	FromNickName string `json:"fromnickname"`
 	Comment      string `json:"comment"`
-	Time         string `json:"time"`
 }
 
 func NewComment(w http.ResponseWriter, r *http.Request) {
@@ -87,14 +87,9 @@ func NewComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.Time) <= 0 {
-		errmsg := "Time is empty"
-		log.Println(errmsg)
-		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
-		return
-	}
+	nowTime := time.Now().Format("2006-01-02 15:04:05")
 
-	err = comment.NewComment(params.UserName, params.FromUserName, params.FromNickName, params.Comment, params.Time)
+	err = comment.NewComment(params.UserName, params.FromUserName, params.FromNickName, params.Comment, nowTime)
 	if err != nil {
 		errmsg := "NewComment into database error:" + err.Error()
 		log.Println(errmsg)

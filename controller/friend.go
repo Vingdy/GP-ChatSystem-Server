@@ -58,8 +58,10 @@ func GetFriendList(w http.ResponseWriter, r *http.Request) {
 type NewFriendParams struct {
 	UserName1 string `json:"username1"`
 	NickName1 string `json:"nickname1"`
+	Id2 string `json:"id2"`
 	UserName2 string `json:"username2"`
 	NickName2 string `json:"nickname2"`
+	Label2 string `json:"label2"`
 }
 
 func NewFriend(w http.ResponseWriter, r *http.Request) {
@@ -108,7 +110,26 @@ func NewFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = friend.NewFriend(params.UserName1, params.NickName1, params.UserName2, params.NickName2)
+	if len(params.Label2) <= 0 {
+		errmsg := "Label2 is empty"
+		log.Println(errmsg)
+		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
+		return
+	}
+
+	find, err := friend.NewFriendCheck(params.UserName1, params.UserName2)
+	if find {
+		fb.FbCode(constant.NEWFRIEND_HAS_BEEN_EXIST).FbMsg("newfriend has been exist").Response()
+		return
+	}
+	if err != nil {
+		errmsg := "NewFriendCheck data write into database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+
+	err = friend.NewFriend(params.UserName1, params.NickName1, params.Id2, params.UserName2, params.NickName2, params.Label2)
 	if err != nil {
 		errmsg := "NewFriend into database error:" + err.Error()
 		log.Println(errmsg)
@@ -119,7 +140,7 @@ func NewFriend(w http.ResponseWriter, r *http.Request) {
 }
 
 type PassFriendParams struct {
-	id string `json:"id"`
+	Id string `json:"id"`
 }
 
 func PassFriend(w http.ResponseWriter, r *http.Request) {
@@ -140,16 +161,16 @@ func PassFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(params.id) < 0 {
-		errmsg := "UserName1 is not right"
+	if len(params.Id) < 0 {
+		errmsg := "Id is not right"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
 
-	find, err := friend.PassFriendIdCheck(params.id)
+	find, err := friend.PassFriendIdCheck(params.Id)
 	if !find {
-		fb.FbCode(constant.ACCOUNT_HAS_BEEN_EXIST).FbMsg("id has been exist").Response()
+		fb.FbCode(constant.PASSFRIEND_NOT_EXIST).FbMsg("id not exist").Response()
 		return
 	}
 	if err != nil {
@@ -159,7 +180,7 @@ func PassFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = friend.PassFriend(params.id)
+	err = friend.PassFriend(params.Id)
 	if err != nil {
 		errmsg := "PassFriend into database error:" + err.Error()
 		log.Println(errmsg)
@@ -167,4 +188,51 @@ func PassFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fb.FbCode(constant.SUCCESS).FbMsg("pass friend success").Response()
+}
+
+func UnPassFriend(w http.ResponseWriter, r *http.Request) {
+	fb := utils.NewFeedBack(w)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		errmsg := "read body error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	params := &PassFriendParams{}
+	err = json.Unmarshal(body, params)
+	if err != nil {
+		errmsg := "json unmarshal error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+
+	if len(params.Id) < 0 {
+		errmsg := "Id is not right"
+		log.Println(errmsg)
+		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
+		return
+	}
+
+	find, err := friend.PassFriendIdCheck(params.Id)
+	if !find {
+		fb.FbCode(constant.PASSFRIEND_NOT_EXIST).FbMsg("id not exist").Response()
+		return
+	}
+	if err != nil {
+		errmsg := "PassFriendIdCheck data write into database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+
+	err = friend.UnPassFriend(params.Id)
+	if err != nil {
+		errmsg := "UnPassFriend into database error:" + err.Error()
+		log.Println(errmsg)
+		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
+		return
+	}
+	fb.FbCode(constant.SUCCESS).FbMsg("unpass friend success").Response()
 }

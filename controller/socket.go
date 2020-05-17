@@ -10,6 +10,7 @@ import (
 	"GP/services/room"
 	"log"
 	"GP/utils"
+	"GP/services/history"
 )
 
 type ConnInfo struct {
@@ -44,7 +45,7 @@ type Room struct {
 	Messagechan    chan Message
 }
 
-var AllClient map[*ConnInfo]bool
+var AllClient map[int]*ConnInfo
 var AllJoinchan chan ConnInfo
 var AllLeavechan chan ConnInfo
 var AllMessagechan chan Message
@@ -73,9 +74,28 @@ func Ws_init() {
 		Rooms = append(Rooms, newRoom)
 		go newRoom.MessageHandle()
 	}
+	AllClient = make(map[int]*ConnInfo)
 	AllJoinchan = make(chan ConnInfo, 20)
 	AllLeavechan = make(chan ConnInfo, 20)
-	AllMessagechan = make(chan Message, 60)
+	go MessageHandle()
+}
+
+func MessageHandle() {
+	for {
+		select {
+		case client := <-AllJoinchan:
+			{
+				AllClient[client.Id] = &client
+			}
+		case client := <-AllLeavechan:
+			{
+				if _, find := AllClient[client.Id]; !find {
+					break
+				}
+				delete(AllClient, client.Id)
+			}
+		}
+	}
 }
 
 func (r Room)MessageHandle() {
@@ -91,6 +111,11 @@ func (r Room)MessageHandle() {
 					fmt.Println(client, string(data))
 					if client.Conn.WriteMessage(websocket.TextMessage, data) != nil {
 						fmt.Errorf("fail to write message")
+					} else {
+						if msg.Type == "message" {
+							err = history.NewHistory(r.Name, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor,msg.Time)
+							log.Println(err)
+						}
 					}
 				}
 			}
@@ -191,10 +216,12 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(userinfo.Id)
 	if _, find := nowroom.ClientConnsMap[id]; !find {
 		nowroom.Joinchan <- client
+		AllJoinchan <- client
 		fmt.Println("connet success")
 	}
 	defer func() {
 		nowroom.Leavechan <- client
+		AllLeavechan <- client
 		client.Conn.Close()
 	}()
 
@@ -206,7 +233,7 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.Header.Get("Sec-WebSocket-Protocol")
 		fmt.Println("accessToken222", accessToken)
 		userinfo, _ := utils.GetTokenInfo(accessToken)
-		fmt.Println(string(data))
+		fmt.Println(string(data), nowroom)
 		if err != nil {
 			fmt.Println(err)
 			break
@@ -218,16 +245,19 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if msg.Type == "change" {
+			fmt.Println("change", msg)
 			nowroom.Leavechan <- client
 			for _, room := range Rooms {
 				if room.Name == msg.Message {
 					nowroom = room
 					client.SendChan = &room.Messagechan
 					client.Room = room.Name
+					fmt.Println(client.Room)
 					room.Joinchan <- client
 				}
 			}
 		} else {
+			msg.RoomName = nowroom.Name
 			msg.Label = userinfo.Label
 			msg.RealName= userinfo.UserName
 			msg.FontType = userinfo.FontType

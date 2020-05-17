@@ -157,14 +157,14 @@ func DownUserRole(id string) (err error) {
 
 func FindUser(findstring string) (userInfo []*model.User, err error) {
 	userInfo = []*model.User{}
-	querySql := "select id, username, password, nickname, role, phone, label, fonttype, fontcolor, isban from gp.user where username like ? or nickname like ? or label like ?;"
+	querySql := "select id, username, nickname, role, phone, label, fonttype, fontcolor, isban from gp.user where nickname like ? or label like ?;"
 	stmt, err := db.DB.Prepare(querySql)
 	if err != nil {
 		log.Println("FindUser Querysql prepare fail")
 		return nil, err
 	}
 	defer stmt.Close()
-	rows, err := stmt.Query("%"+findstring+"%", "%"+findstring+"%", "%"+findstring+"%")
+	rows, err := stmt.Query("%"+findstring+"%", "%"+findstring+"%")
 	if err != nil {
 		log.Println("FindUser Querysql query fail")
 		return nil, err
