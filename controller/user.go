@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"net/http"
+	"GP/constant"
+	"GP/services/user"
 	"GP/utils"
+	"encoding/json"
 	"io/ioutil"
 	"log"
-	"GP/constant"
-	"encoding/json"
-	"GP/services/user"
+	"net/http"
 	"net/url"
 )
 
@@ -74,11 +74,11 @@ func GetUserList(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdateUserParams struct {
-	UserId string `json:"id"`
-	NickName string `json:"nickname"`
-	Phone 	 string `json:"phone"`
-	Label 	 string `json:"label"`
-	FontType 	 string `json:"fonttype"`
+	UserId    string `json:"id"`
+	NickName  string `json:"nickname"`
+	Phone     string `json:"phone"`
+	Label     string `json:"label"`
+	FontType  string `json:"fonttype"`
 	FontColor string `json:"fontcolor"`
 }
 
@@ -153,7 +153,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 type UpdatePasswordParams struct {
-	UserId string `json:"id"`
+	UserId   string `json:"id"`
 	PassWord string `json:"password"`
 }
 
@@ -208,7 +208,7 @@ func BanUser(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &UserIdParams {}
+	params := &UserIdParams{}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -243,7 +243,7 @@ func CancelBanUser(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	params := &UserIdParams {}
+	params := &UserIdParams{}
 	err = json.Unmarshal(body, params)
 	if err != nil {
 		errmsg := "json unmarshal error:" + err.Error()
@@ -345,7 +345,7 @@ type FindStringParams struct {
 
 func FindUser(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
 	findstring := queryForm["findstring"][0]
 	userinfo, err := user.FindUser(findstring)
 	if err != nil {
@@ -359,7 +359,7 @@ func FindUser(w http.ResponseWriter, r *http.Request) {
 
 func GetUserRole(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
 	username := queryForm["username"][0]
 	role, err := user.GetUserRole(username)
 	if err != nil {
@@ -370,4 +370,3 @@ func GetUserRole(w http.ResponseWriter, r *http.Request) {
 	}
 	fb.FbCode(constant.SUCCESS).FbMsg("get user role success").FbData(role).Response()
 }
-

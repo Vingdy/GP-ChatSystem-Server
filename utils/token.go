@@ -3,11 +3,11 @@ package utils
 import (
 	"GP/model"
 	"GP/redis"
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
-func GetTokenInfo(token string) (userinfo model.User, err error){
+func GetTokenInfo(token string) (userinfo model.User, err error) {
 	jsoninfo, err := redis.Redis.Get(token).Bytes()
 	if err != nil {
 		fmt.Println(err)
@@ -20,4 +20,3 @@ func GetTokenInfo(token string) (userinfo model.User, err error){
 	}
 	return
 }
-

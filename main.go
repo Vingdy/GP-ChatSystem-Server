@@ -2,12 +2,12 @@
 package main
 
 import (
+	"GP/controller"
 	"GP/db"
+	"GP/redis"
 	"GP/router"
 	"log"
 	"net/http"
-	"GP/redis"
-	"GP/controller"
 )
 
 func main() {

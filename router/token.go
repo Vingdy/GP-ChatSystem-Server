@@ -1,11 +1,11 @@
 package router
 
 import (
+	"GP/constant"
+	"GP/utils"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
-	"GP/utils"
-	"GP/constant"
 )
 
 func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
@@ -30,7 +30,6 @@ func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 		//fmt.Println(head)
 		accessToken := r.Header.Get("AccessToken")
 		//fmt.Println(accessToken)
-
 
 		/*password,_ := login.GetPassword("test")
 		fmt.Println(password)*/

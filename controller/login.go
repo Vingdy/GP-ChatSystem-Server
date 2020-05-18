@@ -3,16 +3,16 @@ package controller
 import (
 	"GP/constant"
 	"GP/model"
+	"GP/redis"
 	"GP/services/login"
 	"GP/utils"
 	"encoding/json"
+	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
-	"github.com/dgrijalva/jwt-go"
-	"GP/redis"
-	"fmt"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +68,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.PASSWORD_NOT_RIGHT).FbMsg("password not right").Response()
 		return
 	}
-	if userinfo[0].IsBan == "1"{
+	if userinfo[0].IsBan == "1" {
 		fb.FbCode(constant.ACCOUNT_HAS_BEEN_BAN).FbMsg("account has been ban").Response()
 		return
 	}
@@ -100,8 +100,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		ExpiresAt: expired,            // 过期时间，必须设置
 		Issuer:    loginUser.UserName, // 可不必设置，也可以填充用户名，
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)   //生成token
-	accessToken, err := token.SignedString([]byte("asign")) //签名
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims) //生成token
+	accessToken, err := token.SignedString([]byte("asign"))          //签名
 	if err != nil {
 		errmsg := "token create error:" + err.Error()
 		log.Println(errmsg)
@@ -136,7 +136,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("userinfo:", userinfo[0])
-	if err = redis.Redis.Set(accessToken, buffer, 60 * time.Minute).Err();err != nil {
+	if err = redis.Redis.Set(accessToken, buffer, 60*time.Minute).Err(); err != nil {
 		errmsg := "redis set token failed:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
@@ -150,7 +150,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func LogOut(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
 	token := r.Header.Get("AccessToken")
-	if err := redis.Redis.Del(token).Err();err != nil {
+	if err := redis.Redis.Del(token).Err(); err != nil {
 		errmsg := "redis del token failed:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()

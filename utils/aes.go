@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
-	"bytes"
 )
 
 func AesEncryptCBC(origData []byte, key []byte) (encrypted []byte, err error) {
@@ -24,7 +24,7 @@ func AesDecryptCBC(encrypted []byte, key []byte) (decrypted []byte, err error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return []byte(""), err
-	}// 分组秘钥
+	} // 分组秘钥
 	blockSize := block.BlockSize()                              // 获取秘钥块的长度
 	blockMode := cipher.NewCBCDecrypter(block, key[:blockSize]) // 加密模式
 	decrypted = make([]byte, len(encrypted))                    // 创建数组

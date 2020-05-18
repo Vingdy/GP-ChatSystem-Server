@@ -1,18 +1,18 @@
 package router
 
 import (
-	"GP/controller"
-	"github.com/gorilla/mux"
-	"net/http"
 	"GP/constant"
+	"GP/controller"
 	"GP/utils"
 	"fmt"
+	"github.com/gorilla/mux"
+	"net/http"
 )
 
 func SetRouter() *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/",AllowOrigin(TokenCheck(keep))).Methods("GET")
+	router.HandleFunc("/", AllowOrigin(TokenCheck(keep))).Methods("GET")
 	router.HandleFunc("/api/register", AllowOrigin(controller.Register)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/login", AllowOrigin(controller.Login)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/logout", AllowOrigin(TokenCheck(controller.LogOut))).Methods("GET", "OPTIONS")
@@ -70,7 +70,7 @@ func AllowOrigin(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
-		w.Header().Add("Access-Control-Allow-Headers", "AccessToken") //header的类型
+		w.Header().Add("Access-Control-Allow-Headers", "AccessToken")  //header的类型
 		w.Header().Set("Content-Type", "application/json")
 		if r.Method == "OPTIONS" {
 			return
@@ -78,5 +78,3 @@ func AllowOrigin(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r)
 	})
 }
-
-

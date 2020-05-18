@@ -24,7 +24,7 @@ func BanRoom(id string) (err error) {
 func CancelBanRoom(id string) (err error) {
 	updateSql := "update gp.room set isban = 0 where id = ?"
 	stmt, err := db.DB.Prepare(updateSql)
-		if err != nil {
+	if err != nil {
 		log.Println("CancelBanRoom updateSql fail")
 		return err
 	}
@@ -54,14 +54,14 @@ func CreateRoom(roomname string) (err error) {
 }
 
 type RoomUseInfo struct {
-	Id string `json:"id"`
+	Id       string `json:"id"`
 	RoomName string `json:"roomname"`
 }
 
 type RoomInfo struct {
-	Id string `json:"id"`
+	Id       string `json:"id"`
 	RoomName string `json:"roomname"`
-	IsBan string `json:"isban"`
+	IsBan    string `json:"isban"`
 }
 
 func GetOneRoom(id string) (roomInfo []*RoomUseInfo, err error) {
@@ -138,5 +138,3 @@ func GetUseRoomList() (roomInfo []*RoomUseInfo, err error) {
 	}
 	return roomInfo, nil
 }
-
-

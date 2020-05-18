@@ -2,16 +2,16 @@ package friend
 
 import (
 	"GP/db"
-	"log"
 	"database/sql"
+	"log"
 )
 
 type CheckFriendInfo struct {
-	Id string `json:"id"`
-	FriendId         string `json:"friendid"`
-	UserName string `json:"username"`
+	Id         string `json:"id"`
+	FriendId   string `json:"friendid"`
+	UserName   string `json:"username"`
 	FriendName string `json:"friendname"`
-	Label string `json:"label"`
+	Label      string `json:"label"`
 }
 
 func GetCheckFriend(username string) (friendInfo []*CheckFriendInfo, err error) {
@@ -50,21 +50,21 @@ type FriendInfo struct {
 
 func GetFriendList(username string) (friendInfo []*FriendInfo, err error) {
 	friendInfo = []*FriendInfo{}
-	querySql := "select id, username1, id2, username2, nickname2, label2 from gp.friend where (username1 = ? or username2 = ?) and ischeck = 1;"
+	querySql := "select id, username1, id2, username2, nickname2, label2 from gp.friend where username1 = ? and ischeck = 1;"
 	stmt, err := db.DB.Prepare(querySql)
 	if err != nil {
 		log.Println("GetFriendList Querysql prepare fail")
 		return nil, err
 	}
 	defer stmt.Close()
-	rows, err := stmt.Query(username, username)
+	rows, err := stmt.Query(username)
 	if err != nil {
 		log.Println("GetFriendList Querysql query fail")
 		return nil, err
 	}
 	for rows.Next() {
 		var friend FriendInfo
-		err := rows.Scan(&friend.Id, &friend.UserName, &friend.FriendId,  &friend.FriendUserName, &friend.FriendName, &friend.Label)
+		err := rows.Scan(&friend.Id, &friend.UserName, &friend.FriendId, &friend.FriendUserName, &friend.FriendName, &friend.Label)
 		if err != nil {
 			return nil, err
 		}
@@ -89,20 +89,31 @@ func NewFriendCheck(username1, username2 string) (ok bool, err error) {
 	return true, nil
 }
 
-func NewFriend(username1, nickname1, id2, username2, nickname2, label2 string) (err error) {
+func NewFriend(username1, nickname1, id2, username2, nickname2, label2 string) (id string, err error) {
 	insertSql := "insert into gp.friend(username1, nickname1, id2, username2, nickname2, label2, ischeck) values (?, ?, ?, ?, ?, ?, 0)"
 	stmt, err := db.DB.Prepare(insertSql)
 	if err != nil {
-	log.Println("NewFriend insertSql fail")
-	return err
+		log.Println("NewFriend insertSql fail")
+		return "", err
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(username1, nickname1, id2, username2, nickname2, label2)
 	if err != nil {
-	log.Println("NewFriend exec fail")
-	return err
+		log.Println("NewFriend exec fail")
+		return "", err
 	}
-	return nil
+	querySql := "select id from gp.friend where username1 = ? and username2 = ?"
+	err = db.DB.QueryRow(querySql, username1, username2).Scan(&id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Println("FriendId not found")
+			return "", nil
+		} else {
+			log.Println("FriendId query fail" + err.Error())
+			return "", err
+		}
+	}
+	return id, nil
 }
 
 func PassFriendIdCheck(id string) (ok bool, err error) {
@@ -152,4 +163,3 @@ func UnPassFriend(id string) (err error) {
 	}
 	return nil
 }
-

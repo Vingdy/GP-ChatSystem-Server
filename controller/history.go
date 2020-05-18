@@ -1,17 +1,17 @@
 package controller
 
 import (
-	"log"
 	"GP/constant"
-	"net/http"
-	"GP/utils"
-	"net/url"
 	"GP/services/history"
+	"GP/utils"
+	"log"
+	"net/http"
+	"net/url"
 )
 
 func GetHistoryList(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
 	roomname := queryForm["roomname"][0]
 
 	if len(roomname) <= 0 {

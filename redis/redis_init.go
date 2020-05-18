@@ -1,9 +1,9 @@
 package redis
 
 import (
+	"fmt"
 	"github.com/go-redis/redis"
 	"log"
-	"fmt"
 )
 
 var Redis *redis.Client
@@ -14,7 +14,7 @@ func InitRedis() {
 		Password: "",
 		DB:       0,
 	})
-	result, err :=Redis.Ping().Result()
+	result, err := Redis.Ping().Result()
 
 	if err != nil {
 		log.Fatal(fmt.Errorf("redis NewClient Ping failed: %v result:%s", err, result))

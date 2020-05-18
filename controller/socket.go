@@ -1,40 +1,40 @@
 package controller
 
 import (
-	"net/http"
-	"github.com/gorilla/websocket"
-	"fmt"
+	"GP/services/history"
+	"GP/services/room"
+	"GP/utils"
 	"encoding/json"
+	"fmt"
+	"github.com/gorilla/websocket"
+	"log"
+	"net/http"
 	"strconv"
 	"time"
-	"GP/services/room"
-	"log"
-	"GP/utils"
-	"GP/services/history"
 )
 
 type ConnInfo struct {
-	Id         int
-	Token      string
-	Name       string
-	Conn       *websocket.Conn
-	Room       string
-	SendChan   *chan Message
+	Id       int
+	Token    string
+	Name     string
+	Conn     *websocket.Conn
+	Room     string
+	SendChan *chan Message
 }
 
 type Message struct {
-	Type      string `json:"type"`               //消息类型
-	EndPoint  string `json:"endpoint,omitempty"` //发送目标
-	Name      string `json:"name"`               // 用户名称
-	RealName      string `json:"realname"`
-	RoomName  string `json:"roomname"`
-	Message   string `json:"message"` // 消息内容
-	Label     string `json:"label"`
-	FontType  string `json:"fonttype"`
-	FontColor string `json:"fontcolor"`
+	Type      string   `json:"type"`               //消息类型
+	EndPoint  string   `json:"endpoint,omitempty"` //发送目标
+	Name      string   `json:"name"`               // 用户名称
+	RealName  string   `json:"realname"`
+	RoomName  string   `json:"roomname"`
+	Message   string   `json:"message"` // 消息内容
+	Label     string   `json:"label"`
+	FontType  string   `json:"fonttype"`
+	FontColor string   `json:"fontcolor"`
 	NowMember []string `json:"nowmember"`
-	Time      string `json:"time"` //发送时间
-	Token     string `json:token`
+	Time      string   `json:"time"` //发送时间
+	Token     string   `json:token`
 }
 
 type Room struct {
@@ -53,7 +53,6 @@ var AllMessagechan chan Message
 var Rooms []Room
 
 type Socket struct {
-
 }
 
 func Ws_init() {
@@ -98,10 +97,11 @@ func MessageHandle() {
 	}
 }
 
-func (r Room)MessageHandle() {
+func (r Room) MessageHandle() {
 	for {
 		select {
-			case msg := <- r.Messagechan: {
+		case msg := <-r.Messagechan:
+			{
 				for _, client := range r.ClientConnsMap {
 					msg.Time = time.Now().Format("2006-01-02 15:04:05")
 					data, err := json.Marshal(msg)
@@ -113,13 +113,14 @@ func (r Room)MessageHandle() {
 						fmt.Errorf("fail to write message")
 					} else {
 						if msg.Type == "message" {
-							err = history.NewHistory(r.Name, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor,msg.Time)
+							err = history.NewHistory(r.Name, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor, msg.Time)
 							log.Println(err)
 						}
 					}
 				}
 			}
-			case client := <- r.Joinchan: {
+		case client := <-r.Joinchan:
+			{
 				r.ClientConnsMap[client.Id] = client
 				var msg Message
 				msg.Type = "join"
@@ -133,7 +134,8 @@ func (r Room)MessageHandle() {
 				msg.Message = fmt.Sprintf("%s加入了房间", client.Name)
 				r.Messagechan <- msg
 			}
-			case client := <- r.Leavechan: {
+		case client := <-r.Leavechan:
+			{
 				if _, find := r.ClientConnsMap[client.Id]; !find {
 					break
 				}
@@ -148,11 +150,11 @@ func (r Room)MessageHandle() {
 	}
 }
 
-func (s Socket) NewSocket(token string, userid string, username string, roomname string, sendchan *chan Message,  w http.ResponseWriter, r *http.Request) (client ConnInfo, err error) {
+func (s Socket) NewSocket(token string, userid string, username string, roomname string, sendchan *chan Message, w http.ResponseWriter, r *http.Request) (client ConnInfo, err error) {
 	ws := websocket.Upgrader{
-		ReadBufferSize:4096,
-		WriteBufferSize:4096,
-		CheckOrigin:func(r *http.Request) bool {
+		ReadBufferSize:  4096,
+		WriteBufferSize: 4096,
+		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
 		Subprotocols: []string{r.Header.Get("Sec-WebSocket-Protocol")},
@@ -163,12 +165,12 @@ func (s Socket) NewSocket(token string, userid string, username string, roomname
 	}
 	id, _ := strconv.Atoi(userid)
 	client = ConnInfo{
-		Token:token,
-		Id: id,
-		Name:username,
-		Conn:conn,
-		Room:roomname,
-		SendChan:sendchan,
+		Token:    token,
+		Id:       id,
+		Name:     username,
+		Conn:     conn,
+		Room:     roomname,
+		SendChan: sendchan,
 	}
 	return client, nil
 }
@@ -190,7 +192,6 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 		NickName:strconv.Itoa(count),
 	}
 	count++*/
-
 
 	s := new(Socket)
 
@@ -259,7 +260,7 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 		} else {
 			msg.RoomName = nowroom.Name
 			msg.Label = userinfo.Label
-			msg.RealName= userinfo.UserName
+			msg.RealName = userinfo.UserName
 			msg.FontType = userinfo.FontType
 			msg.FontColor = userinfo.FontColor
 			var newmember []string
@@ -272,4 +273,3 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-

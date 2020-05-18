@@ -1,19 +1,19 @@
 package controller
 
 import (
-	"net/http"
-	"GP/utils"
-	"net/url"
-	"log"
 	"GP/constant"
 	"GP/services/friend"
-	"io/ioutil"
+	"GP/utils"
 	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
 )
 
 func GetCheckFriend(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
 	username := queryForm["username"][0]
 
 	if len(username) <= 0 {
@@ -35,7 +35,7 @@ func GetCheckFriend(w http.ResponseWriter, r *http.Request) {
 
 func GetFriendList(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
 	username := queryForm["username"][0]
 
 	if len(username) <= 0 {
@@ -58,10 +58,10 @@ func GetFriendList(w http.ResponseWriter, r *http.Request) {
 type NewFriendParams struct {
 	UserName1 string `json:"username1"`
 	NickName1 string `json:"nickname1"`
-	Id2 string `json:"id2"`
+	Id2       string `json:"id2"`
 	UserName2 string `json:"username2"`
 	NickName2 string `json:"nickname2"`
-	Label2 string `json:"label2"`
+	Label2    string `json:"label2"`
 }
 
 func NewFriend(w http.ResponseWriter, r *http.Request) {
@@ -129,14 +129,14 @@ func NewFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = friend.NewFriend(params.UserName1, params.NickName1, params.Id2, params.UserName2, params.NickName2, params.Label2)
+	id, err := friend.NewFriend(params.UserName1, params.NickName1, params.Id2, params.UserName2, params.NickName2, params.Label2)
 	if err != nil {
 		errmsg := "NewFriend into database error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
-	fb.FbCode(constant.SUCCESS).FbMsg("new friend success").Response()
+	fb.FbCode(constant.SUCCESS).FbMsg("new friend success").FbData(id).Response()
 }
 
 type PassFriendParams struct {

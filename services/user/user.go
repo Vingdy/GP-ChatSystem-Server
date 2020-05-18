@@ -2,9 +2,9 @@ package user
 
 import (
 	"GP/db"
-	"log"
 	"GP/model"
 	"database/sql"
+	"log"
 )
 
 func GetOneUser(id string) (userInfo []*model.User, err error) {
@@ -23,7 +23,7 @@ func GetOneUser(id string) (userInfo []*model.User, err error) {
 	}
 	for rows.Next() {
 		var user model.User
-		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role , &user.Phone, &user.Label, &user.FontType, &user.FontColor, &user.IsBan)
+		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role, &user.Phone, &user.Label, &user.FontType, &user.FontColor, &user.IsBan)
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +49,7 @@ func GetUserList() (userInfo []*model.User, err error) {
 	}
 	for rows.Next() {
 		var user model.User
-		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role , &user.Phone, &user.Label, &user.FontType, &user.FontColor, &user.IsBan)
+		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role, &user.Phone, &user.Label, &user.FontType, &user.FontColor, &user.IsBan)
 		if err != nil {
 			return nil, err
 		}
@@ -171,7 +171,7 @@ func FindUser(findstring string) (userInfo []*model.User, err error) {
 	}
 	for rows.Next() {
 		var user model.User
-		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role , &user.Phone, &user.Label, &user.FontType, &user.FontColor, &user.IsBan)
+		err := rows.Scan(&user.Id, &user.UserName, &user.NickName, &user.Role, &user.Phone, &user.Label, &user.FontType, &user.FontColor, &user.IsBan)
 		if err != nil {
 			return nil, err
 		}
@@ -194,4 +194,3 @@ func GetUserRole(id string) (role string, err error) {
 	}
 	return role, nil
 }
-

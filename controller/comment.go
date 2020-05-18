@@ -1,20 +1,20 @@
 package controller
 
 import (
-	"log"
 	"GP/constant"
-	"io/ioutil"
-	"net/http"
+	"GP/services/comment"
 	"GP/utils"
 	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"net/url"
-	"GP/services/comment"
 	"time"
 )
 
 func GetCommentList(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
-	queryForm,err := url.ParseQuery(r.URL.RawQuery)
+	queryForm, err := url.ParseQuery(r.URL.RawQuery)
 	username := queryForm["username"][0]
 
 	if len(username) <= 0 {

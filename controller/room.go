@@ -51,6 +51,15 @@ func CreateRoom(w http.ResponseWriter, r *http.Request) {
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
+	newRoom := Room{
+		Name:           params.RoomName,
+		ClientConnsMap: make(map[int]ConnInfo),
+		Joinchan:       make(chan ConnInfo, 20),
+		Leavechan:      make(chan ConnInfo, 20),
+		Messagechan:    make(chan Message, 60),
+	}
+	Rooms = append(Rooms, newRoom)
+	go newRoom.MessageHandle()
 	fb.FbCode(constant.SUCCESS).FbMsg("create room success").Response()
 }
 

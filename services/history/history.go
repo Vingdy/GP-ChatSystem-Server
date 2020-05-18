@@ -32,7 +32,7 @@ func NewHistory(roomid, username, chat, label, fonttype, fontcolor, time string)
 
 func GetHistoryList(roomname string) (historyInfo []*HistoryInfo, err error) {
 	historyInfo = []*HistoryInfo{}
-	querySql := "select username, chat, label, fonttype, fontcolor, time from gp.history where roomname = ? order by time desc limit 10;"
+	querySql := "select username, chat, label, fonttype, fontcolor, time from gp.history where roomname = ? order by time desc limit 5;"
 	stmt, err := db.DB.Prepare(querySql)
 	if err != nil {
 		log.Println("GetHistoryList Querysql prepare fail")

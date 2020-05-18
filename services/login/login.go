@@ -72,5 +72,3 @@ func GetPassword(username string) (password string, err error) {
 	}
 	return password, nil
 }
-
-
