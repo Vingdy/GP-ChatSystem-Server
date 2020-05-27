@@ -7,6 +7,10 @@
 #  -p 80:80 \
 #  golang:apline go build
 
+IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
+
+docker container stop go_gp
+
 docker container rm go_gp
 
 #NAME="go_gp"
@@ -22,7 +26,7 @@ docker build -t $IMAGE .
 
 docker stop go_gp
 
-docker run -d --name=go_gp --rm -p 80:80 5432:5432 6379:6379 $IMAGE
+docker run -d --name=go_gp --rm -p 80:80 -p 5432:5432 -p 6379:6379 $IMAGE
 
 #docker tag 705105278/go_gp $IMAGES
 
