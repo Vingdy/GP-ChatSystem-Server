@@ -14,7 +14,7 @@ docker build -t $IMAGE .
 
 docker stop go_gp
 
-docker run -d --name=go_gp --rm -p 80:80 $IMAGE
+docker run -d --name=go_gp --rm -p 80:80 5432:5432 6379:6379 $IMAGE
 
 #docker tag 705105278/go_gp $IMAGES
 

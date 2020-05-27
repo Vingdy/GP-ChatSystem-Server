@@ -9,10 +9,33 @@ import (
 	"net/http"
 )
 
+var path, err = utils.GetProDir()
+
+var FileDownloadHost="/static/"
+
+var FileDownloadPrefix="/files"
+
+var TemplateDir =  path+"/dist/"
+
 func SetRouter() *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", AllowOrigin(TokenCheck(keep))).Methods("GET")
+	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../dist/angular"))))
+	filesever:=http.StripPrefix(FileDownloadHost, http.FileServer(http.Dir(path+FileDownloadPrefix)))
+
+	router.PathPrefix(FileDownloadHost).HandlerFunc(filesever.ServeHTTP)
+
+	router.PathPrefix("/static").Handler(http.StripPrefix(
+		"/static",http.HandlerFunc(func(w http.ResponseWriter,r *http.Request) {
+		http.FileServer(http.Dir(TemplateDir+`angular`)).ServeHTTP(w,r)
+	})))
+	router.PathPrefix("/assets").Handler(http.HandlerFunc(func(w http.ResponseWriter,r *http.Request) {
+		http.FileServer(http.Dir(TemplateDir+`angular`)).ServeHTTP(w,r)
+	}))
+	router.NotFoundHandler =  http.HandlerFunc(notFound)
+
+
+	router.HandleFunc("/test", AllowOrigin(TokenCheck(keep))).Methods("GET")
 	router.HandleFunc("/api/register", AllowOrigin(controller.Register)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/login", AllowOrigin(controller.Login)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/logout", AllowOrigin(TokenCheck(controller.LogOut))).Methods("GET", "OPTIONS")
@@ -52,18 +75,17 @@ func SetRouter() *mux.Router {
 	return router
 }
 
+func notFound(w http.ResponseWriter, r *http.Request){
+	http.ServeFile(w,r,path+`/dist/angular`)
+}
+
 func keep(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
 	fmt.Println(r.Header)
 	token := r.Header.Get("AccessToken")
 	fmt.Println(token)
-	info, err := utils.GetTokenInfo(token)
-	fmt.Println(info)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbData(info).Response()
+	fmt.Println(path)
+	fb.FbCode(constant.SUCCESS).FbMsg(token).FbData(path).Response()
 }
 
 func AllowOrigin(next http.HandlerFunc) http.HandlerFunc {

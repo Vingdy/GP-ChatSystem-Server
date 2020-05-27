@@ -31,6 +31,7 @@ type Message struct {
 	Message   string   `json:"message"` // 消息内容
 	Label     string   `json:"label"`
 	FontType  string   `json:"fonttype"`
+
 	FontColor string   `json:"fontcolor"`
 	NowMember []string `json:"nowmember"`
 	Time      string   `json:"time"` //发送时间
@@ -56,9 +57,9 @@ type Socket struct {
 }
 
 func Ws_init() {
-	roomlist, err := room.GetRoomList()
+	roomlist, err := room.GetUseRoomList()
 	if err != nil {
-		errmsg := "GetRoomList from database error:" + err.Error()
+		errmsg := "GetUseRoomList from database error:" + err.Error()
 		log.Println(errmsg)
 		return
 	}
@@ -108,7 +109,7 @@ func (r Room) MessageHandle() {
 					if err != nil {
 						return
 					}
-					fmt.Println(client, string(data))
+					//fmt.Println(client, string(data))
 					if client.Conn.WriteMessage(websocket.TextMessage, data) != nil {
 						fmt.Errorf("fail to write message")
 					} else {
@@ -183,9 +184,9 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 	}
 
 	accessToken := r.Header.Get("Sec-WebSocket-Protocol")
-	fmt.Println("accessToken", accessToken)
+	//fmt.Println("accessToken", accessToken)
 	userinfo, _ := utils.GetTokenInfo(accessToken)
-	fmt.Println(userinfo)
+	//fmt.Println(userinfo)
 	//测试用数据
 	/*userinfo := model.User{
 		Id:strconv.Itoa(count),
@@ -197,7 +198,7 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 
 	var client ConnInfo
 	var nowroom Room
-	fmt.Println(Rooms)
+	//fmt.Println(Rooms)
 	for _, room := range Rooms {
 		if room.Name == "公共房间" {
 			newclient, err := s.NewSocket(accessToken, userinfo.Id, userinfo.NickName, room.Name, &room.Messagechan, w, r)
@@ -213,7 +214,7 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("client conn is nil")
 		return
 	}
-	fmt.Println(client)
+	//fmt.Println(client)
 	id, _ := strconv.Atoi(userinfo.Id)
 	if _, find := nowroom.ClientConnsMap[id]; !find {
 		nowroom.Joinchan <- client
@@ -232,9 +233,9 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 	for {
 		_, data, err := client.Conn.ReadMessage()
 		accessToken := r.Header.Get("Sec-WebSocket-Protocol")
-		fmt.Println("accessToken222", accessToken)
+		//fmt.Println("accessToken222", accessToken)
 		userinfo, _ := utils.GetTokenInfo(accessToken)
-		fmt.Println(string(data), nowroom)
+		//fmt.Println(string(data), nowroom)
 		if err != nil {
 			fmt.Println(err)
 			break
@@ -246,14 +247,14 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if msg.Type == "change" {
-			fmt.Println("change", msg)
+			//fmt.Println("change", msg)
 			nowroom.Leavechan <- client
 			for _, room := range Rooms {
 				if room.Name == msg.Message {
 					nowroom = room
 					client.SendChan = &room.Messagechan
 					client.Room = room.Name
-					fmt.Println(client.Room)
+					//fmt.Println(client.Room)
 					room.Joinchan <- client
 				}
 			}

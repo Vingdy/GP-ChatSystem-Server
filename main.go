@@ -6,19 +6,19 @@ import (
 	"GP/db"
 	"GP/redis"
 	"GP/router"
-	"log"
 	"net/http"
+	"fmt"
 )
 
 func main() {
-
 	db.InitMySql()
 	db.InitTable()
 	redis.InitRedis()
 	controller.Ws_init()
-	err := http.ListenAndServe(":8080", router.SetRouter())
+	err := http.ListenAndServe(":9000", router.SetRouter())
+	fmt.Println("Listening...")
 	if err == nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 
 }
