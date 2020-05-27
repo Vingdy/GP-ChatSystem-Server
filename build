@@ -6,13 +6,6 @@
 #  -w GP \
 #  -p 80:80 \
 #  golang:apline go build
-<<<<<<< HEAD
-=======
-
-IMAGE="ccr.ccs.tencentyun.com/go_gp/go_gp:latest"
-
-docker container stop go_gp
->>>>>>> origin
 
 docker container rm go_gp
 
