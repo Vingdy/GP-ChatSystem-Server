@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"GP/services/history"
 	"GP/services/room"
 	"GP/utils"
 	"encoding/json"
@@ -11,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"GP/services/history"
 )
 
 type ConnInfo struct {
@@ -112,12 +112,11 @@ func (r Room) MessageHandle() {
 					//fmt.Println(client, string(data))
 					if client.Conn.WriteMessage(websocket.TextMessage, data) != nil {
 						fmt.Errorf("fail to write message")
-					} else {
-						if msg.Type == "message" {
-							err = history.NewHistory(r.Name, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor, msg.Time)
-							log.Println(err)
-						}
 					}
+				}
+				if msg.Type == "message" {
+					err := history.NewHistory(r.Name, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor, msg.Time)
+					log.Println(err)
 				}
 			}
 		case client := <-r.Joinchan:
