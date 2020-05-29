@@ -114,10 +114,7 @@ func (r Room) MessageHandle() {
 						fmt.Errorf("fail to write message")
 					}
 				}
-				if msg.Type == "message" {
-					err := history.NewHistory(r.Name, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor, msg.Time)
-					log.Println(err)
-				}
+
 			}
 		case client := <-r.Joinchan:
 			{
@@ -270,6 +267,10 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 			msg.NowMember = newmember
 			msg.Token = accessToken
 			nowroom.Messagechan <- msg
+			if msg.Type == "message" {
+				err := history.NewHistory(msg.RoomName, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor, msg.Time)
+				log.Println(err)
+			}
 		}
 	}
 }
