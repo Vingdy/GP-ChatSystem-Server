@@ -58,3 +58,7 @@ func TokenCheck(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
+func RefreshToken() {
+
+}
+
