@@ -12,7 +12,7 @@ import (
 type FeedBack model.FeedBack
 
 func NewFeedBack(w http.ResponseWriter) *FeedBack {
-	return &FeedBack{Dist:w}
+	return &FeedBack{Dist: w}
 }
 
 func (f *FeedBack) FbDist(w http.ResponseWriter) *FeedBack {
@@ -35,7 +35,7 @@ func (f *FeedBack) FbData(data interface{}) *FeedBack {
 	return f
 }
 
-func (f *FeedBack)Response()(err error) {
+func (f *FeedBack) Response() (err error) {
 	//out:=&FeedBack
 	if f.Dist == nil {
 		return errors.New("DistWriter is empty")
@@ -55,4 +55,3 @@ func (f *FeedBack) Clear() {
 	f.Msg = ""
 	f.Code = 0
 }
-

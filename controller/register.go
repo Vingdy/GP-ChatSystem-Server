@@ -15,7 +15,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	fb := utils.NewFeedBack(w)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		errmsg := "read body error:"+err.Error()
+		errmsg := "read body error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
@@ -23,25 +23,25 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	newUser := &model.Register{}
 	err = json.Unmarshal(body, newUser)
 	if err != nil {
-		errmsg := "json unmarshal error:"+err.Error()
+		errmsg := "json unmarshal error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
 
-	if len(newUser.UserName)<=0{
+	if len(newUser.UserName) <= 0 {
 		errmsg := "UserName is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
-	if len(newUser.PassWord)<=0{
+	if len(newUser.PassWord) <= 0 {
 		errmsg := "PassWord is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
 		return
 	}
-	if len(newUser.NickName)<=0{
+	if len(newUser.NickName) <= 0 {
 		errmsg := "NickName is empty"
 		log.Println(errmsg)
 		fb.FbCode(constant.PARMAS_EMPTY).FbMsg(errmsg).Response()
@@ -54,14 +54,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		errmsg := "RegisterAccCheck data write into database error:"+err.Error()
+		errmsg := "RegisterAccCheck data write into database error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
 	}
 	err = register.Register(newUser.UserName, newUser.PassWord, newUser.NickName)
 	if err != nil {
-		errmsg := "Register data write into database error:"+err.Error()
+		errmsg := "Register data write into database error:" + err.Error()
 		log.Println(errmsg)
 		fb.FbCode(constant.STATUS_INTERNAL_SERVER_ERROR).FbMsg(errmsg).Response()
 		return
