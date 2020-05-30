@@ -114,7 +114,8 @@ func (r Room) MessageHandle() {
 						fmt.Errorf("fail to write message")
 					}
 				}
-
+				err := history.NewHistory(r.Name, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor, msg.Time)
+				log.Println(err)
 			}
 		case client := <-r.Joinchan:
 			{
@@ -140,6 +141,11 @@ func (r Room) MessageHandle() {
 				var msg Message
 				msg.Name = client.Name
 				msg.Type = "leave"
+				var newmember []string
+				for _, v := range r.ClientConnsMap {
+					newmember = append(newmember, v.Name)
+				}
+				msg.NowMember = newmember
 				msg.Message = fmt.Sprintf("%s离开了房间", client.Name)
 				r.Messagechan <- msg
 			}
@@ -267,10 +273,6 @@ func WsMain(w http.ResponseWriter, r *http.Request) {
 			msg.NowMember = newmember
 			msg.Token = accessToken
 			nowroom.Messagechan <- msg
-			if msg.Type == "message" {
-				err := history.NewHistory(msg.RoomName, msg.Name, msg.Message, msg.Label, msg.FontType, msg.FontColor, msg.Time)
-				log.Println(err)
-			}
 		}
 	}
 }
