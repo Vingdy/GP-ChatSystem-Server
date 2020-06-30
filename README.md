@@ -1,4 +1,4 @@
-# GP-MatchChatSystem  
+# GP-ChatSystemServer  
 聊天室服务端，全程用Go编写  
 一个的学习用聊天室，加了很多无用的功能  
   
